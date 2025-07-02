@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome - Ramazone Cashback</title>
+    
+    <!-- CSS File Link (Yeh line design ke liye bahut zaroori hai) -->
     <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Google Fonts Link -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+
     <div class="auth-container">
         <div class="auth-box">
             <h1 class="logo">Ramazone Cashback</h1>
@@ -29,7 +34,7 @@
                 <p class="form-switch">Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
             </form>
 
-            <!-- Sign Up Form -->
+            <!-- Sign Up Form (Initially Hidden) -->
             <form id="signup-form" class="auth-form hidden">
                 <h2>Sign Up</h2>
                 <div class="input-group">
@@ -47,10 +52,13 @@
                 <button type="submit" class="btn">Sign Up</button>
                 <p class="form-switch">Already have an account? <a href="#" id="show-login">Login</a></p>
             </form>
+
+            <!-- Error Message Display Area -->
             <div id="error-message" class="error"></div>
         </div>
     </div>
 
+    <!-- Firebase and Auth JavaScript Files -->
     <script type="module" src="js/firebase-init.js"></script>
     <script type="module" src="js/auth.js"></script>
 </body>
