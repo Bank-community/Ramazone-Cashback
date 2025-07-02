@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Ramazone</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="admin-login-view">
+        <div class="auth-container">
+            <div class="auth-box">
+                <h1 class="logo">Admin Panel Login</h1>
+                <form id="admin-login-form" class="auth-form">
+                    <div class="input-group">
+                        <label for="admin-email">Admin Email</label>
+                        <input type="email" id="admin-email" value="admin@ramazone.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="admin-password">Password</label>
+                        <input type="password" id="admin-password" required>
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                    <div id="admin-error-message" class="error"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-dashboard-view" class="hidden">
+        <header class="header">
+            <h1 class="logo">Admin Dashboard</h1>
+            <div class="user-info">
+                <span>Admin</span>
+                <button id="admin-logout-btn" class="btn btn-secondary">Logout</button>
+            </div>
+        </header>
+
+        <main class="container">
+            <!-- Cashback Requests -->
+            <section class="card">
+                <h2>Pending Cashback Requests</h2>
+                <div class="table-container">
+                    <table id="cashback-requests-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User Name</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Coupon Requests -->
+            <section class="card">
+                <h2>Pending Coupon Requests</h2>
+                <div class="table-container">
+                    <table id="coupon-requests-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User Name</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- User Profiles -->
+            <section class="card">
+                <h2>View User Profiles</h2>
+                <form id="admin-search-user-form">
+                    <div class="input-group">
+                        <label for="admin-search-mobile">Search by Mobile Number</label>
+                        <input type="tel" id="admin-search-mobile" required>
+                    </div>
+                    <button type="submit" class="btn">Search</button>
+                </form>
+                <div id="admin-user-profile-result" class="user-profile-view"></div>
+            </section>
+        </main>
+    </div>
+    
+    <div id="loader" class="loader-overlay hidden">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <script type="module" src="js/firebase-init.js"></script>
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html>
