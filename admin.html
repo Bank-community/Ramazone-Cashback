@@ -23,20 +23,93 @@
             padding: 10px;
             color: var(--text-color);
         }
+        
+        /* --- Loader Styles --- */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--light-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .spinner {
+            border: 5px solid var(--medium-gray);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        #loader p {
+            font-weight: 500;
+            color: var(--dark-gray);
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .container {
             background-color: #fff;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 20px auto;
         }
         h1, h2, h3 { color: #1c1e21; }
         h1 { font-size: 24px; text-align: center; margin-bottom: 20px; }
         h2 { font-size: 20px; border-bottom: 2px solid var(--medium-gray); padding-bottom: 10px; margin-bottom: 20px; }
         h3 { font-size: 18px; }
 
-        /* --- NEW: Grid Navigation Menu --- */
+        /* --- Login View --- */
+        #login-view {
+            max-width: 400px;
+            margin: 50px auto;
+        }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="email"], input[type="password"], input[type="text"], input[type="tel"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .error-message {
+            color: var(--danger-color);
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* --- Dashboard View (Initially Hidden) --- */
+        #dashboard-view {
+            display: none;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        #logout-btn {
+            background-color: var(--danger-color);
+            width: auto;
+        }
+
+        /* --- Grid Navigation Menu --- */
         .nav-menu {
             display: grid;
             grid-template-columns: 1fr 1fr; /* 2 columns */
@@ -55,24 +128,16 @@
             transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
             text-align: center;
         }
-        .nav-btn:hover {
-            background-color: var(--medium-gray);
-        }
         .nav-btn.active {
             background-color: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         /* --- View Sections --- */
         .view { display: none; }
         .view.active { display: block; }
 
-        /* --- Forms --- */
-        .inline-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .inline-form input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
-        
         /* --- Tables (Card View on Mobile) --- */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         thead { display: none; }
@@ -80,39 +145,35 @@
         td { display: block; text-align: right; padding: 8px 0; border-bottom: 1px dashed #eee; position: relative; }
         td:last-child { border-bottom: none; }
         td::before { content: attr(data-label); position: absolute; left: 0; font-weight: 600; color: var(--dark-gray); text-align: left; }
+        
+        .action-buttons-cell { text-align: center !important; padding-top: 15px; }
+        .action-buttons-cell::before { display: none; }
+        
         .empty-msg { text-align: center; padding: 20px; color: #888; display: block; }
         
         /* --- Buttons --- */
         button { padding: 12px 15px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; transition: filter 0.2s; width: 100%; box-sizing: border-box; }
-        .action-buttons-cell { text-align: center !important; padding-top: 15px; }
-        .action-buttons-cell::before { display: none; }
         .action-btn { padding: 8px 15px; font-size: 14px; margin: 5px; width: auto; display: inline-block; }
         .approve-btn { background-color: var(--success-color); }
         .reject-btn { background-color: var(--danger-color); }
         .delete-btn { background-color: var(--dark-gray); }
         
-        /* --- Data Cleanup Section --- */
-        .cleanup-section {
-            background-color: #fff8e1;
-            border: 1px solid #ffecb3;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .cleanup-section h3 { margin-top: 0; }
-        .cleanup-section p { font-size: 14px; color: #6d4c41; }
-        .cleanup-section .cleanup-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
+        /* --- Forms --- */
+        .inline-form { display: flex; gap: 10px; align-items: center; }
+        
+        /* --- Data Cleanup & Search Result Sections --- */
+        .cleanup-section, .result-section { background-color: #f8f9fa; border: 1px solid var(--medium-gray); padding: 20px; border-radius: 8px; margin-top: 20px; }
+        .cleanup-section h3, .result-section h3 { margin-top: 0; }
+        .cleanup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .cleanup-btn { background-color: var(--danger-color); }
+        #redeem-result, #user-search-result { margin-top: 20px; }
+        .result-box { padding: 15px; border-radius: 5px; color: white; margin-top: 15px;}
+        .result-box.success { background-color: var(--success-color); }
+        .result-box.error { background-color: var(--danger-color); }
+        .result-box.info { background-color: var(--dark-gray); }
 
         /* --- Status & Other Styles --- */
         .user-details { font-size: 13px; color: var(--dark-gray); display: block; margin-top: 4px; }
-        #redeem-result, #user-search-result { margin-top: 15px; padding: 15px; border-radius: 5px; display: none; }
-        .result-success { background-color: #e6f4ea; border: 1px solid #b7e1c7; color: #1e8e3e; }
-        .result-error { background-color: #fce8e6; border: 1px solid #f2b2ae; color: #d93025; }
         .status { padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; color: white; text-transform: capitalize; display: inline-block; text-align: center; min-width: 70px; }
         .status-approved, .status-ready { background-color: var(--primary-color); }
         .status-redeemed { background-color: var(--success-color); }
@@ -122,8 +183,6 @@
         /* --- Desktop and Tablet Styles --- */
         @media (min-width: 768px) {
             .nav-menu { grid-template-columns: repeat(5, 1fr); }
-            .inline-form { flex-direction: row; }
-            .inline-form button { width: auto; }
             thead { display: table-header-group; }
             tr { display: table-row; border: none; padding: 0; margin: 0; }
             tr:hover { background-color: #f5f6f7; }
@@ -135,80 +194,103 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Admin Dashboard</h1>
+    <div id="loader">
+        <div class="spinner"></div>
+        <p>Loading Admin Panel...</p>
+    </div>
 
-        <nav class="nav-menu" id="nav-menu">
-            <button class="nav-btn active" data-view="cashback">Cashback</button>
-            <button class="nav-btn" data-view="claims">Wallet Claims</button>
-            <button class="nav-btn" data-view="coupons">Coupons</button>
-            <button class="nav-btn" data-view="search">User Search</button>
-            <button class="nav-btn" data-view="cleanup">Data Cleanup</button>
-        </nav>
-
-        <!-- Views -->
-        <div id="cashback-view" class="view active">
-            <h2>Pending Cashback Requests</h2>
-            <table id="pending-cashback-table">
-                <thead><tr><th>User</th><th>Product</th><th>Price (₹)</th><th>Action</th></tr></thead>
-                <tbody id="pending-cashback-body"></tbody>
-            </table>
-            <h2 style="margin-top: 40px;">Completed Cashback History</h2>
-            <table id="completed-cashback-table">
-                <thead><tr><th>User</th><th>Product</th><th>Status</th><th>Action</th></tr></thead>
-                <tbody id="completed-cashback-body"></tbody>
-            </table>
-        </div>
-
-        <div id="claims-view" class="view">
-            <h2>Pending Wallet Claim Requests</h2>
-            <table id="pending-claims-table">
-                <thead><tr><th>User</th><th>Amount (₹)</th><th>Date</th><th>Action</th></tr></thead>
-                <tbody id="pending-claims-body"></tbody>
-            </table>
-            <h2 style="margin-top: 40px;">Completed Claim History</h2>
-            <table id="completed-claims-table">
-                <thead><tr><th>User</th><th>Amount (₹)</th><th>Status</th><th>Action</th></tr></thead>
-                <tbody id="completed-claims-body"></tbody>
-            </table>
-        </div>
-
-        <div id="coupons-view" class="view">
-            <!-- Coupon Redeem and History sections -->
-            <section>
-                <h2>Redeem Coupon</h2>
-                <form id="redeem-coupon-form" class="inline-form">
-                    <input type="text" id="coupon-code-input" placeholder="Enter Coupon Code" required>
-                    <button type="submit">Verify & Redeem</button>
+    <div id="app-container" style="display: none;">
+        <div class="container">
+            <div id="login-view">
+                <h1>Admin Login</h1>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="admin-email">Email</label>
+                        <input type="email" id="admin-email" value="Prince79036@gmail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-password">Password</label>
+                        <input type="password" id="admin-password" value="Pk123580" required>
+                    </div>
+                    <button type="submit">Login</button>
+                    <p id="login-error-msg" class="error-message"></p>
                 </form>
-                <div id="redeem-result"></div>
-            </section>
-            <section>
-                <h2 style="margin-top: 40px;">All Issued Coupons</h2>
-                <table id="all-coupons-table">
-                   <thead><tr><th>Coupon</th><th>User</th><th>Amount (₹)</th><th>Status</th><th>Action</th></tr></thead>
-                   <tbody id="all-coupons-body"></tbody>
-                </table>
-            </section>
-        </div>
+            </div>
 
-        <div id="search-view" class="view">
-            <!-- User Search section -->
-             <h2>Search User Details</h2>
-            <form id="user-search-form" class="inline-form">
-                <input type="tel" id="user-search-mobile" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number" required>
-                <button type="submit">Search User</button>
-            </form>
-            <div id="user-search-result" style="display: none;"></div>
-        </div>
-        
-        <div id="cleanup-view" class="view">
-            <div class="cleanup-section">
-                <h3>Purana Data Saaf Karein</h3>
-                <p>Yahan se aap ek click mein purane, complete ho chuke transactions ko delete kar sakte hain. Yeh action undo nahi kiya ja sakta.</p>
-                <div class="cleanup-actions">
-                    <button class="cleanup-btn" data-days="30">30 Din Se Purana Data Delete Karein</button>
-                    <button class="cleanup-btn" data-days="90">90 Din Se Purana Data Delete Karein</button>
+            <div id="dashboard-view">
+                <div class="header">
+                    <h1>Admin Dashboard</h1>
+                    <button id="logout-btn">Logout</button>
+                </div>
+
+                <nav class="nav-menu" id="nav-menu">
+                    <button class="nav-btn active" data-view="cashback">Cashback</button>
+                    <button class="nav-btn" data-view="claims">Wallet Claims</button>
+                    <button class="nav-btn" data-view="coupons">Coupons</button>
+                    <button class="nav-btn" data-view="search">User Search</button>
+                    <button class="nav-btn" data-view="cleanup">Data Cleanup</button>
+                </nav>
+
+                <div id="cashback-view" class="view active">
+                    <h2>Pending Cashback Requests</h2>
+                    <table id="pending-cashback-table">
+                        <thead><tr><th>User</th><th>Product</th><th>Price (₹)</th><th>Action</th></tr></thead>
+                        <tbody id="pending-cashback-body"></tbody>
+                    </table>
+                    <h2 style="margin-top: 40px;">Completed Cashback History</h2>
+                    <table id="completed-cashback-table">
+                        <thead><tr><th>User</th><th>Product</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="completed-cashback-body"></tbody>
+                    </table>
+                </div>
+                <div id="claims-view" class="view">
+                    <h2>Pending Wallet Claim Requests</h2>
+                    <table id="pending-claims-table">
+                        <thead><tr><th>User</th><th>Amount (₹)</th><th>Date</th><th>Action</th></tr></thead>
+                        <tbody id="pending-claims-body"></tbody>
+                    </table>
+                    <h2 style="margin-top: 40px;">Completed Claim History</h2>
+                    <table id="completed-claims-table">
+                        <thead><tr><th>User</th><th>Amount (₹)</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="completed-claims-body"></tbody>
+                    </table>
+                </div>
+                <div id="coupons-view" class="view">
+                    <section class="result-section">
+                        <h2>Redeem Coupon</h2>
+                        <form id="verify-coupon-form" class="inline-form">
+                            <input type="text" id="coupon-code-input" placeholder="Enter Coupon Code" required style="flex-grow: 1;">
+                            <button type="submit" style="width: auto;">Verify Coupon</button>
+                        </form>
+                        <div id="redeem-result"></div>
+                    </section>
+                    <section>
+                        <h2 style="margin-top: 40px;">All Issued Coupons</h2>
+                        <table id="all-coupons-table">
+                        <thead><tr><th>Coupon</th><th>User</th><th>Amount (₹)</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="all-coupons-body"></tbody>
+                        </table>
+                    </section>
+                </div>
+                <div id="search-view" class="view">
+                    <section class="result-section">
+                        <h2>Search User Details</h2>
+                        <form id="user-search-form" class="inline-form">
+                            <input type="tel" id="user-search-mobile" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number" required style="flex-grow: 1;">
+                            <button type="submit" style="width: auto;">Search User</button>
+                        </form>
+                        <div id="user-search-result"></div>
+                    </section>
+                </div>
+                <div id="cleanup-view" class="view">
+                    <div class="cleanup-section">
+                        <h3>Purana Data Saaf Karein</h3>
+                        <p>Yahan se aap ek click mein purane, complete ho chuke transactions ko delete kar sakte hain. Yeh action undo nahi kiya ja sakta.</p>
+                        <div class="cleanup-actions">
+                            <button class="cleanup-btn action-btn" data-type="cleanup" data-action="delete" data-days="30">30 Din Se Purana Data Delete Karein</button>
+                            <button class="cleanup-btn action-btn" data-type="cleanup" data-action="delete" data-days="90">90 Din Se Purana Data Delete Karein</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -217,48 +299,94 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getDatabase, ref, get, set, update, onValue, runTransaction, remove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, update, remove, runTransaction, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDD_D0IVWm1Q6ySwqSh8GCyD2PE1L6Pw_k",
-            authDomain: "bank-home-picture.firebaseapp.com",
-            databaseURL: "https://bank-home-picture-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "bank-home-picture",
-            storageBucket: "bank-home-picture.appspot.com",
-            messagingSenderId: "163431983802",
-            appId: "1:163431983802:web:9ea1de11c1c68457993083"
+            apiKey: "AIzaSyCmgMr4cj7ec1B09eu3xpRhCwsVCeQR9v0",
+            authDomain: "tipsplit-e3wes.firebaseapp.com",
+            databaseURL: "https://tipsplit-e3wes-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tipsplit-e3wes",
+            storageBucket: "tipsplit-e3wes.firebasestorage.app",
+            messagingSenderId: "984733883633",
+            appId: "1:984733883633:web:adc1e1d22b629a6b631d50"
         };
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const database = getDatabase(app);
 
+        // --- DOM Elements ---
+        const loader = document.getElementById('loader');
+        const appContainer = document.getElementById('app-container');
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const loginForm = document.getElementById('login-form');
+        const loginErrorMsg = document.getElementById('login-error-msg');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // --- Global State ---
         let allCashbackRequests = {};
         let allClaimRequests = {};
+        
+        // --- Authentication ---
+        onAuthStateChanged(auth, (user) => {
+            loader.style.display = 'none';
+            appContainer.style.display = 'block';
 
-        window.addEventListener('load', () => {
-            setupEventListeners();
-            loadAndDisplayCashback();
-            loadAndDisplayClaims();
-            loadAndDisplayAllCoupons();
+            if (user) {
+                loginView.style.display = 'none';
+                dashboardView.style.display = 'block';
+                initializeDashboard();
+            } else {
+                loginView.style.display = 'block';
+                dashboardView.style.display = 'none';
+            }
         });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            loginErrorMsg.style.display = 'none';
+
+            signInWithEmailAndPassword(auth, email, password)
+                .catch((error) => {
+                    console.error("Login Error:", error);
+                    loginErrorMsg.textContent = "Galat email ya password.";
+                    loginErrorMsg.style.display = 'block';
+                });
+        });
+
+        logoutBtn.addEventListener('click', () => signOut(auth));
+
+        // --- Dashboard Initialization ---
+        function initializeDashboard() {
+            setupEventListeners();
+            loadInitialData();
+        }
 
         function setupEventListeners() {
             document.getElementById('nav-menu').addEventListener('click', handleNavClick);
-            // Action buttons
-            document.getElementById('pending-cashback-body').addEventListener('click', handleAction);
-            document.getElementById('completed-cashback-body').addEventListener('click', handleAction);
-            document.getElementById('pending-claims-body').addEventListener('click', handleAction);
-            document.getElementById('completed-claims-body').addEventListener('click', handleAction);
-            document.getElementById('all-coupons-body').addEventListener('click', handleAction);
-            // Forms
-            document.getElementById('redeem-coupon-form').addEventListener('submit', handleRedeemCoupon);
-            document.getElementById('redeem-result').addEventListener('click', handleConfirmRedeem);
+            document.getElementById('dashboard-view').addEventListener('click', handleAction);
+            document.getElementById('verify-coupon-form').addEventListener('submit', handleVerifyCoupon);
             document.getElementById('user-search-form').addEventListener('submit', handleUserSearch);
-            // Cleanup
-            document.querySelector('.cleanup-actions').addEventListener('click', handleBulkDelete);
+        }
+        
+        function loadInitialData() {
+            onValue(ref(database, 'cashback_requests'), (snapshot) => {
+                allCashbackRequests = snapshot.val() || {};
+                displayCashback();
+            });
+            onValue(ref(database, 'claim_requests'), (snapshot) => {
+                allClaimRequests = snapshot.val() || {};
+                displayClaims();
+                displayAllCoupons();
+            });
         }
 
+        // --- View & Navigation ---
         function handleNavClick(e) {
-            if (e.target.tagName !== 'BUTTON') return;
+            if (e.target.tagName !== 'BUTTON' || !e.target.dataset.view) return;
             const viewId = e.target.dataset.view;
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             e.target.classList.add('active');
@@ -266,125 +394,132 @@
             document.getElementById(viewId + '-view').classList.add('active');
         }
 
-        // --- Data Loading ---
-        function loadAndDisplayCashback() {
-            const cashbackRef = ref(database, 'cashback_requests');
-            onValue(cashbackRef, (snapshot) => {
-                const pendingBody = document.getElementById('pending-cashback-body');
-                const completedBody = document.getElementById('completed-cashback-body');
-                pendingBody.innerHTML = '';
-                completedBody.innerHTML = '';
-                allCashbackRequests = snapshot.val() || {};
-                
-                const requests = Object.values(allCashbackRequests).sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
+        // --- Display Functions ---
+        function displayCashback() {
+            const pendingBody = document.getElementById('pending-cashback-body');
+            const completedBody = document.getElementById('completed-cashback-body');
+            pendingBody.innerHTML = '';
+            completedBody.innerHTML = '';
+            
+            const requests = Object.values(allCashbackRequests).sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
 
-                let hasPending = false, hasCompleted = false;
-                requests.forEach(req => {
-                    const tr = document.createElement('tr');
-                    if (req.status === 'pending') {
-                        hasPending = true;
-                        tr.innerHTML = `
-                            <td data-label="User">${req.userName}<span class="user-details">${req.userMobile}</span></td>
-                            <td data-label="Product">${req.productName}</td>
-                            <td data-label="Price (₹)">${req.productPrice.toFixed(2)}</td>
-                            <td class="action-buttons-cell">
-                                <button class="action-btn approve-btn" data-type="cashback" data-action="approve" data-id="${req.requestId}">Approve</button>
-                                <button class="action-btn reject-btn" data-type="cashback" data-action="reject" data-id="${req.requestId}">Reject</button>
-                            </td>`;
-                        pendingBody.appendChild(tr);
-                    } else {
-                        hasCompleted = true;
-                        tr.innerHTML = `
-                            <td data-label="User">${req.userName}<span class="user-details">${req.userMobile}</span></td>
-                            <td data-label="Product">${req.productName}</td>
-                            <td data-label="Status"><span class="status status-${req.status}">${req.status}</span></td>
-                            <td class="action-buttons-cell">
-                                <button class="action-btn delete-btn" data-type="cashback" data-action="delete" data-id="${req.requestId}">Delete</button>
-                            </td>`;
-                        completedBody.appendChild(tr);
-                    }
-                });
-                if (!hasPending) pendingBody.innerHTML = '<tr><td class="empty-msg">Koi pending requests nahi hain.</td></tr>';
-                if (!hasCompleted) completedBody.innerHTML = '<tr><td class="empty-msg">Koi purani history nahi hai.</td></tr>';
+            let hasPending = false, hasCompleted = false;
+            requests.forEach(req => {
+                const tr = document.createElement('tr');
+                if (req.status === 'pending') {
+                    hasPending = true;
+                    tr.innerHTML = createCashbackRow(req, 'pending');
+                    pendingBody.appendChild(tr);
+                } else {
+                    hasCompleted = true;
+                    tr.innerHTML = createCashbackRow(req, 'completed');
+                    completedBody.appendChild(tr);
+                }
             });
+            if (!hasPending) pendingBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi pending requests nahi hain.</td></tr>';
+            if (!hasCompleted) completedBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi purani history nahi hai.</td></tr>';
         }
 
-        function loadAndDisplayClaims() {
-             const claimsRef = ref(database, 'claim_requests');
-            onValue(claimsRef, (snapshot) => {
-                const pendingBody = document.getElementById('pending-claims-body');
-                const completedBody = document.getElementById('completed-claims-body');
-                pendingBody.innerHTML = '';
-                completedBody.innerHTML = '';
-                allClaimRequests = snapshot.val() || {};
-                
-                const requests = Object.values(allClaimRequests).sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
+        function displayClaims() {
+            const pendingBody = document.getElementById('pending-claims-body');
+            const completedBody = document.getElementById('completed-claims-body');
+            pendingBody.innerHTML = '';
+            completedBody.innerHTML = '';
+            
+            const requests = Object.values(allClaimRequests).sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
 
-                let hasPending = false, hasCompleted = false;
-                requests.forEach(req => {
-                    const tr = document.createElement('tr');
-                    if (req.status === 'pending') {
-                        hasPending = true;
-                        tr.innerHTML = `
-                            <td data-label="User">${req.userName}<span class="user-details">${req.userMobile}</span></td>
-                            <td data-label="Amount (₹)">${req.claimAmount.toFixed(2)}</td>
-                            <td data-label="Request Date">${new Date(req.requestDate).toLocaleDateString()}</td>
-                            <td class="action-buttons-cell">
-                                <button class="action-btn approve-btn" data-type="claim" data-action="approve" data-id="${req.claimId}">Approve</button>
-                                <button class="action-btn reject-btn" data-type="claim" data-action="reject" data-id="${req.claimId}">Reject</button>
-                            </td>`;
-                        pendingBody.appendChild(tr);
-                    } else if (req.status === 'approved' || req.status === 'rejected') {
-                         hasCompleted = true;
-                        tr.innerHTML = `
-                            <td data-label="User">${req.userName}<span class="user-details">${req.userMobile}</span></td>
-                            <td data-label="Amount (₹)">${req.claimAmount.toFixed(2)}</td>
-                            <td data-label="Status"><span class="status status-${req.status}">${req.status}</span></td>
-                            <td class="action-buttons-cell">
-                                <button class="action-btn delete-btn" data-type="claim" data-action="delete" data-id="${req.claimId}">Delete</button>
-                            </td>`;
-                        completedBody.appendChild(tr);
-                    }
-                });
-                if (!hasPending) pendingBody.innerHTML = '<tr><td class="empty-msg">Koi pending requests nahi hain.</td></tr>';
-                if (!hasCompleted) completedBody.innerHTML = '<tr><td class="empty-msg">Koi purani history nahi hai.</td></tr>';
+            let hasPending = false, hasCompleted = false;
+            requests.forEach(req => {
+                const tr = document.createElement('tr');
+                if (req.status === 'pending') {
+                    hasPending = true;
+                    tr.innerHTML = createClaimRow(req, 'pending');
+                    pendingBody.appendChild(tr);
+                } else if (req.status === 'approved' || req.status === 'rejected') {
+                    hasCompleted = true;
+                    tr.innerHTML = createClaimRow(req, 'completed');
+                    completedBody.appendChild(tr);
+                }
             });
+            if (!hasPending) pendingBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi pending requests nahi hain.</td></tr>';
+            if (!hasCompleted) completedBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi purani history nahi hai.</td></tr>';
         }
         
-        function loadAndDisplayAllCoupons() {
-            const claimsRef = ref(database, 'claim_requests');
-            onValue(claimsRef, (snapshot) => {
-                const tableBody = document.getElementById('all-coupons-body');
-                tableBody.innerHTML = '';
-                const coupons = Object.values(snapshot.val() || {}).filter(req => req.couponCode).sort((a,b) => new Date(b.approvalDate || 0) - new Date(a.approvalDate || 0));
-                
-                if (coupons.length === 0) {
-                    tableBody.innerHTML = '<tr><td class="empty-msg">Koi bhi coupon issue nahi hua hai.</td></tr>';
-                    return;
-                }
+        function displayAllCoupons() {
+            const tableBody = document.getElementById('all-coupons-body');
+            tableBody.innerHTML = '';
+            let coupons = Object.values(allClaimRequests).filter(req => req.couponCode).sort((a,b) => new Date(b.approvalDate || 0) - new Date(a.approvalDate || 0));
+            
+            if (coupons.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="empty-msg">Koi bhi coupon issue nahi hua hai.</td></tr>';
+                return;
+            }
 
-                coupons.forEach(coupon => {
-                    const tr = document.createElement('tr');
-                    const deleteBtn = coupon.status === 'redeemed' ? `<button class="action-btn delete-btn" data-type="claim" data-action="delete" data-id="${coupon.claimId}">Delete</button>` : '';
-                    tr.innerHTML = `
-                        <td data-label="Coupon">${coupon.couponCode}</td>
-                        <td data-label="User">${coupon.userName} <span class="user-details">${coupon.userMobile}</span></td>
-                        <td data-label="Amount (₹)">${coupon.claimAmount.toFixed(2)}</td>
-                        <td data-label="Status"><span class="status status-${coupon.status === 'approved' ? 'ready' : 'redeemed'}">${coupon.status === 'approved' ? 'Ready' : 'Redeemed'}</span></td>
-                        <td class="action-buttons-cell">${deleteBtn}</td>
-                    `;
-                    tableBody.appendChild(tr);
-                });
+            coupons.forEach(coupon => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = createCouponRow(coupon);
+                tableBody.appendChild(tr);
             });
         }
 
+        // --- HTML Row Generators ---
+        function createCashbackRow(req, type) {
+            const userHTML = `${req.userName}<span class="user-details">${req.userMobile}</span>`;
+            if (type === 'pending') {
+                return `<td data-label="User">${userHTML}</td>
+                        <td data-label="Product">${req.productName}</td>
+                        <td data-label="Price (₹)">${req.productPrice.toFixed(2)}</td>
+                        <td class="action-buttons-cell">
+                            <button class="action-btn approve-btn" data-type="cashback" data-action="approve" data-id="${req.requestId}">Approve</button>
+                            <button class="action-btn reject-btn" data-type="cashback" data-action="reject" data-id="${req.requestId}">Reject</button>
+                        </td>`;
+            } else {
+                return `<td data-label="User">${userHTML}</td>
+                        <td data-label="Product">${req.productName}</td>
+                        <td data-label="Status"><span class="status status-${req.status}">${req.status}</span></td>
+                        <td class="action-buttons-cell">
+                            <button class="action-btn delete-btn" data-type="cashback" data-action="delete" data-id="${req.requestId}">Delete</button>
+                        </td>`;
+            }
+        }
+        
+        function createClaimRow(req, type) {
+            const userHTML = `${req.userName}<span class="user-details">${req.userMobile}</span>`;
+            if (type === 'pending') {
+                return `<td data-label="User">${userHTML}</td>
+                        <td data-label="Amount (₹)">${req.claimAmount.toFixed(2)}</td>
+                        <td data-label="Request Date">${new Date(req.requestDate).toLocaleDateString()}</td>
+                        <td class="action-buttons-cell">
+                            <button class="action-btn approve-btn" data-type="claim" data-action="approve" data-id="${req.claimId}">Approve</button>
+                            <button class="action-btn reject-btn" data-type="claim" data-action="reject" data-id="${req.claimId}">Reject</button>
+                        </td>`;
+            } else {
+                 return `<td data-label="User">${userHTML}</td>
+                        <td data-label="Amount (₹)">${req.claimAmount.toFixed(2)}</td>
+                        <td data-label="Status"><span class="status status-${req.status}">${req.status}</span></td>
+                        <td class="action-buttons-cell">
+                            <button class="action-btn delete-btn" data-type="claim" data-action="delete" data-id="${req.claimId}">Delete</button>
+                        </td>`;
+            }
+        }
 
-        // --- Universal Action Handler ---
+        function createCouponRow(coupon) {
+            const deleteBtn = coupon.status === 'redeemed' ? `<button class="action-btn delete-btn" data-type="claim" data-action="delete" data-id="${coupon.claimId}">Delete</button>` : '';
+            const status = coupon.status === 'approved' ? 'ready' : 'redeemed';
+            return `<td data-label="Coupon">${coupon.couponCode}</td>
+                    <td data-label="User">${coupon.userName} <span class="user-details">${coupon.userMobile}</span></td>
+                    <td data-label="Amount (₹)">${coupon.claimAmount.toFixed(2)}</td>
+                    <td data-label="Status"><span class="status status-${status}">${status}</span></td>
+                    <td class="action-buttons-cell">${deleteBtn}</td>`;
+        }
+
+        // --- Action Handlers ---
         function handleAction(e) {
             const target = e.target;
             if (!target.classList.contains('action-btn')) return;
 
-            const { type, action, id } = target.dataset;
+            const { type, action, id, days } = target.dataset;
+            if (!type || !action) return;
 
             if (action === 'approve') {
                 if (type === 'cashback') approveCashbackRequest(id);
@@ -393,36 +528,151 @@
                 if (type === 'cashback') rejectCashbackRequest(id);
                 else if (type === 'claim') rejectClaimRequest(id);
             } else if (action === 'delete') {
-                if (confirm("Kya aap is entry ko hamesha ke liye delete karna chahte hain?")) {
+                if (type === 'cleanup') {
+                    handleBulkDelete(days);
+                } else if (confirm("Kya aap is entry ko hamesha ke liye delete karna chahte hain?")) {
                     const recordRef = ref(database, `${type}_requests/${id}`);
                     remove(recordRef).then(() => alert("Entry delete ho gayi.")).catch(err => alert("Error: " + err.message));
                 }
+            } else if (action === 'confirm-redeem') {
+                handleConfirmRedemption(id);
             }
         }
         
-        // --- Specific Logic Functions ---
+        // **FIXED**: User search now performs a direct DB query
+        async function handleUserSearch(e) {
+            e.preventDefault();
+            const mobile = document.getElementById('user-search-mobile').value;
+            const resultDiv = document.getElementById('user-search-result');
+            resultDiv.innerHTML = '';
+
+            if (!/^\d{10}$/.test(mobile)) {
+                resultDiv.innerHTML = `<div class="result-box error">Kripya 10-digit ka mobile number daalein.</div>`;
+                return;
+            }
+            
+            // This query is now allowed by the new security rules
+            const usersRef = ref(database, 'users');
+            const userQuery = query(usersRef, orderByChild('mobile'), equalTo(mobile));
+            const snapshot = await get(userQuery);
+
+            if (!snapshot.exists()) {
+                resultDiv.innerHTML = `<div class="result-box error">Is mobile number se koi user nahi mila.</div>`;
+                return;
+            }
+
+            const userId = Object.keys(snapshot.val())[0];
+            const userData = snapshot.val()[userId];
+            
+            const cashbackHistory = Object.values(allCashbackRequests).filter(r => r.userId === userId);
+            const claimHistory = Object.values(allClaimRequests).filter(r => r.userId === userId);
+
+            let resultHTML = `<h3>${userData.name} - ${userData.mobile}</h3>
+                              <p><strong>Wallet Balance:</strong> ₹${(userData.wallet || 0).toFixed(2)}</p>
+                              <h4>Cashback History</h4>
+                              ${generateHistoryTable(cashbackHistory, 'cashback')}
+                              <h4>Wallet Claim History</h4>
+                              ${generateHistoryTable(claimHistory, 'claim')}`;
+            
+            resultDiv.innerHTML = resultHTML;
+        }
+
+        function generateHistoryTable(requests, type) {
+            if (requests.length === 0) return '<p>Koi history nahi hai.</p>';
+            let table = '<table class="search-history-table"><thead>';
+            if (type === 'cashback') {
+                table += '<tr><th>Date</th><th>Product</th><th>Price</th><th>Status</th></tr></thead><tbody>';
+                requests.sort((a,b) => new Date(b.requestDate) - new Date(a.requestDate)).forEach(r => {
+                    table += `<tr><td data-label="Date">${new Date(r.requestDate).toLocaleDateString()}</td><td data-label="Product">${r.productName}</td><td data-label="Price">₹${r.productPrice.toFixed(2)}</td><td data-label="Status"><span class="status status-${r.status}">${r.status}</span></td></tr>`;
+                });
+            } else { // claim
+                table += '<tr><th>Date</th><th>Amount</th><th>Status</th><th>Coupon</th></tr></thead><tbody>';
+                 requests.sort((a,b) => new Date(b.requestDate) - new Date(a.requestDate)).forEach(r => {
+                    const coupon = r.couponCode ? r.couponCode : '---';
+                    table += `<tr><td data-label="Date">${new Date(r.requestDate).toLocaleDateString()}</td><td data-label="Amount">₹${r.claimAmount.toFixed(2)}</td><td data-label="Status"><span class="status status-${r.status}">${r.status}</span></td><td data-label="Coupon">${coupon}</td></tr>`;
+                });
+            }
+            return table + '</tbody></table>';
+        }
+
+        async function handleVerifyCoupon(e) {
+            e.preventDefault();
+            const couponCode = document.getElementById('coupon-code-input').value.trim();
+            const resultDiv = document.getElementById('redeem-result');
+            resultDiv.innerHTML = '';
+
+            if (!couponCode) {
+                showResult(resultDiv, 'error', 'Kripya coupon code daalein.');
+                return;
+            }
+
+            const claimsQuery = query(ref(database, 'claim_requests'), orderByChild('couponCode'), equalTo(couponCode));
+            const snapshot = await get(claimsQuery);
+
+            if (!snapshot.exists()) {
+                showResult(resultDiv, 'error', 'Galat coupon code.');
+                return;
+            }
+
+            const claimId = Object.keys(snapshot.val())[0];
+            const claimData = snapshot.val()[claimId];
+            
+            let statusClass = claimData.status === 'approved' ? 'ready' : claimData.status;
+            let statusText = claimData.status;
+            if (statusText === 'approved') statusText = 'Ready to Redeem';
+
+            let resultHTML = `<h4>Coupon Details</h4>
+                              <p><strong>Code:</strong> ${claimData.couponCode}</p>
+                              <p><strong>User:</strong> ${claimData.userName} (${claimData.userMobile})</p>
+                              <p><strong>Amount:</strong> ₹${claimData.claimAmount.toFixed(2)}</p>
+                              <p><strong>Status:</strong> <span class="status status-${statusClass}">${statusText}</span></p>`;
+
+            if (claimData.status === 'approved') {
+                resultHTML += `<button class="action-btn approve-btn" data-type="claim" data-action="confirm-redeem" data-id="${claimId}" style="margin-top: 10px;">Confirm Redeem</button>`;
+            } else if (claimData.status === 'redeemed') {
+                 resultHTML += `<p class="result-box info">Yah coupon pehle hi redeem ho chuka hai.</p>`;
+            }
+            resultDiv.innerHTML = resultHTML;
+        }
+        
+        async function handleConfirmRedemption(claimId) {
+            const resultDiv = document.getElementById('redeem-result');
+            await update(ref(database, `claim_requests/${claimId}`), { status: 'redeemed' });
+            showResult(resultDiv, 'success', `Coupon safaltapoorvak redeem ho gaya!`);
+            document.getElementById('verify-coupon-form').reset();
+            setTimeout(() => { resultDiv.innerHTML = ''; }, 4000);
+        }
+
+        function showResult(element, type, message) {
+            element.innerHTML = `<div class="result-box ${type}">${message}</div>`;
+        }
+
+        // --- Core Logic Functions ---
         async function approveCashbackRequest(id) {
             const reqData = allCashbackRequests[id];
             if (!reqData || reqData.status !== 'pending') return;
-            const userRef = ref(database, 'users/' + reqData.userMobile);
-            await runTransaction(userRef, (data) => {
-                if (data) data.wallet = (data.wallet || 0) + reqData.cashbackAmount;
-                return data;
+            const userRef = ref(database, 'users/' + reqData.userId);
+            await runTransaction(userRef, (userData) => {
+                if (userData) {
+                    userData.wallet = (userData.wallet || 0) + reqData.cashbackAmount;
+                }
+                return userData;
             });
-            await update(ref(database, `cashback_requests/${id}`), { status: 'approved' });
+            await update(ref(database, 'cashback_requests/' + id), { status: 'approved' });
             alert('Cashback request approve ho gaya hai.');
         }
 
         async function rejectCashbackRequest(id) {
-            await update(ref(database, `cashback_requests/${id}`), { status: 'rejected' });
+            await update(ref(database, 'cashback_requests/' + id), { status: 'rejected' });
             alert('Cashback request reject kar diya gaya hai.');
         }
         
         async function approveClaimRequest(id) {
             const claimData = allClaimRequests[id];
             if (!claimData || claimData.status !== 'pending') return;
+            
             const couponCode = 'RMZ' + Math.floor(100000 + Math.random() * 900000);
-            await update(ref(database, `claim_requests/${id}`), {
+            await update(ref(database, 'claim_requests/' + id), {
                 status: 'approved',
                 couponCode: couponCode,
                 approvalDate: new Date().toISOString()
@@ -434,152 +684,54 @@
             if (!confirm("Reject karne par paisa customer ke wallet mein wapas chala jayega. Confirm?")) return;
             const claimData = allClaimRequests[id];
             if (!claimData || claimData.status !== 'pending') return;
-            const userRef = ref(database, 'users/' + claimData.userMobile);
-            await runTransaction(userRef, (data) => {
-                if (data) data.wallet = (data.wallet || 0) + claimData.claimAmount;
-                return data;
-            });
-            await update(ref(database, `claim_requests/${id}`), { status: 'rejected' });
-            alert('Claim reject kar diya gaya hai aur paisa refund ho gaya hai.');
+
+            const userRef = ref(database, 'users/' + claimData.userId);
+            try {
+                await runTransaction(userRef, (userData) => {
+                    if (userData) {
+                        userData.wallet = (userData.wallet || 0) + claimData.claimAmount;
+                        return userData;
+                    }
+                    return; // Abort
+                });
+                await update(ref(database, 'claim_requests/' + id), { status: 'rejected' });
+                alert('Claim reject kar diya gaya hai aur paisa customer ko refund ho gaya hai.');
+            } catch (error) {
+                alert('Ek error aayi: ' + error.message);
+            }
         }
 
-        // --- Bulk Delete Logic ---
-        async function handleBulkDelete(e) {
-            if (!e.target.classList.contains('cleanup-btn')) return;
-            const days = parseInt(e.target.dataset.days, 10);
+        function handleBulkDelete(days) {
             if (isNaN(days)) return;
-
             if (!confirm(`Kya aap ${days} din se purane sabhi COMPLETED transactions ko delete karna chahte hain?`)) return;
 
             const cutoffDate = new Date();
             cutoffDate.setDate(cutoffDate.getDate() - days);
 
-            let promises = [];
+            let updates = {};
             const types = ['cashback_requests', 'claim_requests'];
 
-            for (const type of types) {
+            types.forEach(type => {
                 const allRecords = type === 'cashback_requests' ? allCashbackRequests : allClaimRequests;
                 for (const id in allRecords) {
                     const record = allRecords[id];
                     const recordDate = new Date(record.requestDate);
                     if (record.status !== 'pending' && recordDate < cutoffDate) {
-                        promises.push(remove(ref(database, `${type}/${id}`)));
+                        updates[`${type}/${id}`] = null;
                     }
                 }
-            }
-
-            if (promises.length === 0) {
+            });
+            
+            const count = Object.keys(updates).length;
+            if (count === 0) {
                 alert("Koi bhi transaction delete karne ke liye nahi mila.");
                 return;
             }
 
-            try {
-                await Promise.all(promises);
-                alert(`${promises.length} purane records safaltapoorvak delete kar diye gaye hain.`);
-            } catch (error) {
-                alert("Delete karne mein error aayi: " + error.message);
-            }
+            update(ref(database), updates)
+                .then(() => alert(`${count} purane records safaltapoorvak delete kar diye gaye hain.`))
+                .catch(error => alert("Delete karne mein error aayi: " + error.message));
         }
-        
-        // --- Other Functions (Search, Redeem) - No significant changes ---
-        async function handleUserSearch(e) {
-            e.preventDefault();
-            const mobile = document.getElementById('user-search-mobile').value.trim();
-            const resultDiv = document.getElementById('user-search-result');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = 'Searching...';
-
-            const userSnap = await get(ref(database, 'users/' + mobile));
-            if (!userSnap.exists()) {
-                resultDiv.innerHTML = 'Is mobile number se koi user nahi mila.';
-                return;
-            }
-
-            const userData = userSnap.val();
-            const userCashback = Object.values(allCashbackRequests).filter(r => r.userMobile === mobile).sort((a,b) => new Date(b.requestDate) - new Date(a.requestDate));
-            const userClaims = Object.values(allClaimRequests).filter(r => r.userMobile === mobile).sort((a,b) => new Date(b.requestDate) - new Date(a.requestDate));
-
-            let html = `
-                <h3>User Details: ${userData.name}</h3>
-                <p><strong>Mobile:</strong> ${userData.mobile}</p>
-                <p><strong>Current Wallet Balance:</strong> ₹${(userData.wallet || 0).toFixed(2)}</p>
-                
-                <h4>Wallet Claim & Coupon History</h4>
-                ${generateHistoryTable(userClaims, 'claims')}
-
-                <h4>Product Cashback History</h4>
-                ${generateHistoryTable(userCashback, 'cashback')}
-            `;
-            resultDiv.innerHTML = html;
-        }
-
-        function generateHistoryTable(requests, type) {
-            if (requests.length === 0) return '<p class="empty-msg">Koi history nahi hai.</p>';
-            let table = document.createElement('table');
-            let thead = document.createElement('thead');
-            let tbody = document.createElement('tbody');
-            
-            if (type === 'claims') thead.innerHTML = `<tr><th>Date</th><th>Amount</th><th>Status</th><th>Coupon</th></tr>`;
-            else thead.innerHTML = `<tr><th>Date</th><th>Product</th><th>Price</th><th>Status</th></tr>`;
-
-            requests.forEach(req => {
-                const tr = document.createElement('tr');
-                if (type === 'claims') {
-                    const couponCell = req.couponCode ? req.couponCode : '---';
-                    tr.innerHTML = `<td data-label="Date">${new Date(req.requestDate).toLocaleDateString()}</td><td data-label="Amount">${req.claimAmount.toFixed(2)}</td><td data-label="Status"><span class="status status-${req.status}">${req.status}</span></td><td data-label="Coupon">${couponCell}</td>`;
-                } else {
-                    tr.innerHTML = `<td data-label="Date">${new Date(req.requestDate).toLocaleDateString()}</td><td data-label="Product">${req.productName}</td><td data-label="Price">${req.productPrice.toFixed(2)}</td><td data-label="Status"><span class="status status-${req.status}">${req.status}</span></td>`;
-                }
-                tbody.appendChild(tr);
-            });
-            table.appendChild(thead);
-            table.appendChild(tbody);
-            return table.outerHTML;
-        }
-
-        async function handleRedeemCoupon(e) {
-            e.preventDefault();
-            const code = document.getElementById('coupon-code-input').value.trim().toUpperCase();
-            if (!code) return;
-
-            const redeemResultDiv = document.getElementById('redeem-result');
-            redeemResultDiv.style.display = 'block';
-            
-            const snapshot = await get(ref(database, 'claim_requests'));
-            const coupons = snapshot.val() || {};
-            const foundCoupon = Object.values(coupons).find(c => c.couponCode === code);
-            
-            if (!foundCoupon) {
-                redeemResultDiv.className = 'result-error';
-                redeemResultDiv.textContent = 'Error: Invalid Coupon Code.';
-                return;
-            }
-
-            if (foundCoupon.status === 'approved') {
-                redeemResultDiv.className = 'result-success';
-                redeemResultDiv.innerHTML = `<strong>Valid Coupon!</strong><br>User: ${foundCoupon.userName} (${foundCoupon.userMobile})<br>Amount: ₹${foundCoupon.claimAmount.toFixed(2)}<br><button id="confirm-redeem-btn" data-claim-id="${foundCoupon.claimId}">Confirm Redemption</button>`;
-            } else if (foundCoupon.status === 'redeemed') {
-                redeemResultDiv.className = 'result-error';
-                redeemResultDiv.textContent = 'Error: Yeh coupon pehle hi redeem ho chuka hai.';
-            } else {
-                redeemResultDiv.className = 'result-error';
-                redeemResultDiv.textContent = 'Error: Yeh coupon abhi tak approve nahi hua hai.';
-            }
-        }
-
-        async function handleConfirmRedeem(e) {
-            if (e.target.id !== 'confirm-redeem-btn') return;
-            const claimId = e.target.dataset.claimId;
-            await update(ref(database, 'claim_requests/' + claimId), {
-                status: 'redeemed',
-                redemptionDate: new Date().toISOString()
-            });
-            const redeemResultDiv = document.getElementById('redeem-result');
-            redeemResultDiv.className = 'result-success';
-            redeemResultDiv.textContent = 'Safal! Coupon redeem ho gaya hai.';
-            document.getElementById('redeem-coupon-form').reset();
-        }
-
     </script>
 </body>
 </html>
