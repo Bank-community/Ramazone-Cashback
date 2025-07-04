@@ -27,8 +27,9 @@
         
         /* --- Loader Styles --- */
         #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--light-gray); display: flex;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); display: flex;
             justify-content: center; align-items: center; z-index: 9999; flex-direction: column; gap: 15px;
+            backdrop-filter: blur(5px);
         }
         .spinner {
             border: 5px solid var(--medium-gray); border-top: 5px solid var(--primary-color); border-radius: 50%;
@@ -92,6 +93,7 @@
         .approve-btn { background-color: var(--success-color); }
         .reject-btn { background-color: var(--danger-color); }
         .delete-btn { background-color: var(--dark-gray); }
+        .redeem-btn { background-color: var(--warning-color); }
         
         /* --- Forms & Results --- */
         .inline-form { display: flex; gap: 10px; align-items: center; }
@@ -104,6 +106,7 @@
         .result-box.success { background-color: var(--success-color); }
         .result-box.error { background-color: var(--danger-color); }
         .result-box.info { background-color: var(--dark-gray); }
+        .result-box.warning { background-color: var(--warning-color); }
 
         /* --- NEW & UPDATED Styles for User Search Result --- */
         .whatsapp-icon {
@@ -119,6 +122,7 @@
         .status-approved { background-color: #e6f4ea; color: #34a853; }
         .status-pending { background-color: #fef5e6; color: #fbbc04; }
         .status-rejected { background-color: #fce8e6; color: #ea4335; }
+        .status-redeemed { background-color: #e8eaf6; color: #3f51b5; } /* New status style */
 
         /* --- Desktop and Tablet Styles --- */
         @media (min-width: 768px) {
@@ -171,6 +175,50 @@
                     <button class="nav-btn" data-view="cleanup">Data Cleanup</button>
                 </nav>
 
+                <div id="cashback-view" class="view active">
+                    <h2>Pending Cashback Requests</h2>
+                    <table id="pending-cashback-table">
+                        <thead><tr><th>User</th><th>Product</th><th>Price (₹)</th><th>Action</th></tr></thead>
+                        <tbody id="pending-cashback-body"></tbody>
+                    </table>
+                    <h2 style="margin-top: 40px;">Completed Cashback History</h2>
+                    <table id="completed-cashback-table">
+                        <thead><tr><th>User</th><th>Product</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="completed-cashback-body"></tbody>
+                    </table>
+                </div>
+
+                <div id="claims-view" class="view">
+                    <h2>Pending Wallet Claim Requests</h2>
+                    <table id="pending-claims-table">
+                        <thead><tr><th>User</th><th>Amount (₹)</th><th>Date</th><th>Action</th></tr></thead>
+                        <tbody id="pending-claims-body"></tbody>
+                    </table>
+                    <h2 style="margin-top: 40px;">Completed Claim History</h2>
+                    <table id="completed-claims-table">
+                        <thead><tr><th>User</th><th>Amount (₹)</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="completed-claims-body"></tbody>
+                    </table>
+                </div>
+
+                <div id="coupons-view" class="view">
+                    <section class="result-section">
+                        <h2>Redeem Coupon</h2>
+                        <form id="redeem-coupon-form" class="inline-form">
+                            <input type="text" id="coupon-code-input" placeholder="Enter Coupon Code" required style="flex-grow: 1;">
+                            <button type="submit" style="width: auto;">Verify & Redeem</button>
+                        </form>
+                        <div id="redeem-result" style="margin-top: 15px;"></div>
+                    </section>
+                    <section>
+                        <h2 style="margin-top: 40px;">All Issued Coupons</h2>
+                        <table id="all-coupons-table">
+                           <thead><tr><th>Coupon</th><th>User</th><th>Amount (₹)</th><th>Status</th><th>Action</th></tr></thead>
+                           <tbody id="all-coupons-body"></tbody>
+                        </table>
+                    </section>
+                </div>
+
                 <div id="search-view" class="view">
                     <section class="result-section">
                         <h2>Search User Details</h2>
@@ -181,58 +229,17 @@
                         <div id="user-search-result"></div>
                     </section>
                 </div>
-                <!-- Other views (cashback, claims, etc.) remain the same -->
-                 <div id="cashback-view" class="view active">
-                 <h2>Pending Cashback Requests</h2>
-                <table id="pending-cashback-table">
-                    <thead><tr><th>User</th><th>Product</th><th>Price (₹)</th><th>Action</th></tr></thead>
-                    <tbody id="pending-cashback-body"></tbody>
-                </table>
-                <h2 style="margin-top: 40px;">Completed Cashback History</h2>
-                <table id="completed-cashback-table">
-                    <thead><tr><th>User</th><th>Product</th><th>Status</th><th>Action</th></tr></thead>
-                    <tbody id="completed-cashback-body"></tbody>
-                </table>
-            </div>
-            <div id="claims-view" class="view">
-                <h2>Pending Wallet Claim Requests</h2>
-                <table id="pending-claims-table">
-                    <thead><tr><th>User</th><th>Amount (₹)</th><th>Date</th><th>Action</th></tr></thead>
-                    <tbody id="pending-claims-body"></tbody>
-                </table>
-                <h2 style="margin-top: 40px;">Completed Claim History</h2>
-                <table id="completed-claims-table">
-                    <thead><tr><th>User</th><th>Amount (₹)</th><th>Status</th><th>Action</th></tr></thead>
-                    <tbody id="completed-claims-body"></tbody>
-                </table>
-            </div>
-            <div id="coupons-view" class="view">
-                 <section class="result-section">
-                    <h2>Redeem Coupon</h2>
-                    <form id="redeem-coupon-form" class="inline-form">
-                        <input type="text" id="coupon-code-input" placeholder="Enter Coupon Code" required style="flex-grow: 1;">
-                        <button type="submit" style="width: auto;">Verify & Redeem</button>
-                    </form>
-                    <div id="redeem-result" class="result-box" style="display:none;"></div>
-                </section>
-                <section>
-                    <h2 style="margin-top: 40px;">All Issued Coupons</h2>
-                    <table id="all-coupons-table">
-                       <thead><tr><th>Coupon</th><th>User</th><th>Amount (₹)</th><th>Status</th><th>Action</th></tr></thead>
-                       <tbody id="all-coupons-body"></tbody>
-                    </table>
-                </section>
-            </div>
-            <div id="cleanup-view" class="view">
-                <div class="cleanup-section">
-                    <h3>Purana Data Saaf Karein</h3>
-                    <p>Yahan se aap ek click mein purane, complete ho chuke transactions ko delete kar sakte hain. Yeh action undo nahi kiya ja sakta.</p>
-                    <div class="cleanup-actions">
-                        <button class="cleanup-btn action-btn" data-type="cleanup" data-action="delete" data-days="30">30 Din Se Purana Data Delete Karein</button>
-                        <button class="cleanup-btn action-btn" data-type="cleanup" data-action="delete" data-days="90">90 Din Se Purana Data Delete Karein</button>
+
+                <div id="cleanup-view" class="view">
+                    <div class="cleanup-section">
+                        <h3>Purana Data Saaf Karein</h3>
+                        <p>Yahan se aap ek click mein purane, complete ho chuke transactions ko delete kar sakte hain. Yeh action undo nahi kiya ja sakta.</p>
+                        <div class="cleanup-actions">
+                            <button class="cleanup-btn action-btn" data-type="cleanup" data-action="delete" data-days="30">30 Din Se Purana Data Delete Karein</button>
+                            <button class="cleanup-btn action-btn" data-type="cleanup" data-action="delete" data-days="90">90 Din Se Purana Data Delete Karein</button>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>
@@ -270,8 +277,6 @@
         
         // --- Authentication ---
         onAuthStateChanged(auth, (user) => {
-            loader.style.display = 'none';
-            appContainer.style.display = 'block';
             if (user) {
                 loginView.style.display = 'none';
                 dashboardView.style.display = 'block';
@@ -279,11 +284,14 @@
             } else {
                 loginView.style.display = 'block';
                 dashboardView.style.display = 'none';
+                loader.style.display = 'none';
+                appContainer.style.display = 'block';
             }
         });
 
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            loader.style.display = 'flex';
             const email = document.getElementById('admin-email').value;
             const password = document.getElementById('admin-password').value;
             loginErrorMsg.style.display = 'none';
@@ -291,6 +299,7 @@
                 .catch((error) => {
                     loginErrorMsg.textContent = "Galat email ya password.";
                     loginErrorMsg.style.display = 'block';
+                    loader.style.display = 'none';
                 });
         });
 
@@ -303,83 +312,143 @@
         }
 
         function setupEventListeners() {
-            document.getElementById('nav-menu').addEventListener('click', handleNavClick);
-            document.getElementById('dashboard-view').addEventListener('click', handleAction);
+            // Use a single, delegated event listener on the dashboard for all actions
+            dashboardView.addEventListener('click', handleAction);
+            
+            // Listen for form submissions separately
             document.getElementById('user-search-form').addEventListener('submit', handleUserSearch);
+            document.getElementById('redeem-coupon-form').addEventListener('submit', handleCouponSearch);
         }
         
         function loadInitialData() {
-            onValue(ref(database, 'cashback_requests'), (snapshot) => {
-                allCashbackRequests = snapshot.val() || {};
-                displayCashback();
-            });
-            onValue(ref(database, 'claim_requests'), (snapshot) => {
-                allClaimRequests = snapshot.val() || {};
-                displayClaims();
+            const cashbackRef = ref(database, 'cashback_requests');
+            const claimsRef = ref(database, 'claim_requests');
+
+            Promise.all([get(cashbackRef), get(claimsRef)]).then(() => {
+                onValue(cashbackRef, (snapshot) => {
+                    allCashbackRequests = snapshot.val() || {};
+                    displayCashback();
+                });
+                onValue(claimsRef, (snapshot) => {
+                    allClaimRequests = snapshot.val() || {};
+                    displayClaims();
+                    displayCoupons();
+                });
+                loader.style.display = 'none';
+                appContainer.style.display = 'block';
+            }).catch(error => {
+                console.error("Failed to load initial data:", error);
+                loader.style.display = 'none';
+                alert("Could not load data from the server.");
             });
         }
 
         // --- View & Navigation ---
-        function handleNavClick(e) {
-            if (e.target.tagName !== 'BUTTON' || !e.target.dataset.view) return;
-            const viewId = e.target.dataset.view;
+        function handleNavClick(target) {
+            const viewId = target.dataset.view;
+            if (!viewId) return;
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
+            target.classList.add('active');
             document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
             document.getElementById(viewId + '-view').classList.add('active');
         }
 
-        // --- Display Functions (Cashback & Claims) ---
+        // --- Display Functions (with error handling) ---
         function displayCashback() {
             const pendingBody = document.getElementById('pending-cashback-body');
             const completedBody = document.getElementById('completed-cashback-body');
             pendingBody.innerHTML = ''; completedBody.innerHTML = '';
-            const requests = Object.values(allCashbackRequests).sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
-            let hasPending = false, hasCompleted = false;
-            requests.forEach(req => {
-                const tr = document.createElement('tr');
-                if (req.status === 'pending') {
-                    hasPending = true;
-                    tr.innerHTML = createRow(req, 'cashback', 'pending');
-                    pendingBody.appendChild(tr);
-                } else {
-                    hasCompleted = true;
-                    tr.innerHTML = createRow(req, 'cashback', 'completed');
-                    completedBody.appendChild(tr);
-                }
-            });
-            if (!hasPending) pendingBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi pending requests nahi hain.</td></tr>';
-            if (!hasCompleted) completedBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi purani history nahi hai.</td></tr>';
+            try {
+                const requests = Object.entries(allCashbackRequests).sort(([,a], [,b]) => new Date(b.requestDate) - new Date(a.requestDate));
+                let hasPending = false, hasCompleted = false;
+                requests.forEach(([key, req]) => {
+                    if (!req || !req.status) return; // Skip malformed records
+                    const tr = document.createElement('tr');
+                    if (req.status === 'pending') {
+                        hasPending = true;
+                        tr.innerHTML = createRow(key, req, 'cashback', 'pending');
+                        pendingBody.appendChild(tr);
+                    } else {
+                        hasCompleted = true;
+                        tr.innerHTML = createRow(key, req, 'cashback', 'completed');
+                        completedBody.appendChild(tr);
+                    }
+                });
+                if (!hasPending) pendingBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi pending requests nahi hain.</td></tr>';
+                if (!hasCompleted) completedBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi purani history nahi hai.</td></tr>';
+            } catch (error) {
+                console.error("Error displaying cashback:", error);
+                pendingBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Data display karne mein error aayi.</td></tr>';
+            }
         }
 
         function displayClaims() {
             const pendingBody = document.getElementById('pending-claims-body');
             const completedBody = document.getElementById('completed-claims-body');
             pendingBody.innerHTML = ''; completedBody.innerHTML = '';
-            const requests = Object.values(allClaimRequests).sort((a, b) => new Date(b.requestDate) - new Date(a.requestDate));
-            let hasPending = false, hasCompleted = false;
-            requests.forEach(req => {
-                const tr = document.createElement('tr');
-                if (req.status === 'pending') {
-                    hasPending = true;
-                    tr.innerHTML = createRow(req, 'claim', 'pending');
-                    pendingBody.appendChild(tr);
-                } else if (req.status === 'approved' || req.status === 'rejected') {
-                    hasCompleted = true;
-                    tr.innerHTML = createRow(req, 'claim', 'completed');
-                    completedBody.appendChild(tr);
-                }
-            });
-            if (!hasPending) pendingBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi pending requests nahi hain.</td></tr>';
-            if (!hasCompleted) completedBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi purani history nahi hai.</td></tr>';
+            try {
+                const requests = Object.entries(allClaimRequests).sort(([,a], [,b]) => new Date(b.requestDate) - new Date(a.requestDate));
+                let hasPending = false, hasCompleted = false;
+                requests.forEach(([key, req]) => {
+                    if (!req || !req.status) return; // Skip malformed records
+                    const tr = document.createElement('tr');
+                    if (req.status === 'pending') {
+                        hasPending = true;
+                        tr.innerHTML = createRow(key, req, 'claim', 'pending');
+                        pendingBody.appendChild(tr);
+                    } else if (['approved', 'rejected', 'redeemed'].includes(req.status)) {
+                        hasCompleted = true;
+                        tr.innerHTML = createRow(key, req, 'claim', 'completed');
+                        completedBody.appendChild(tr);
+                    }
+                });
+                if (!hasPending) pendingBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi pending requests nahi hain.</td></tr>';
+                if (!hasCompleted) completedBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Koi purani history nahi hai.</td></tr>';
+            } catch (error) {
+                console.error("Error displaying claims:", error);
+                pendingBody.innerHTML = '<tr><td colspan="4" class="empty-msg">Data display karne mein error aayi.</td></tr>';
+            }
         }
 
-        function createRow(req, type, view) {
-            const userHTML = `${req.userName}<span class="user-details">${req.userMobile}</span>`;
-            const id = type === 'cashback' ? req.requestId : req.claimId;
+        function displayCoupons() {
+            const tableBody = document.getElementById('all-coupons-body');
+            tableBody.innerHTML = '';
+             try {
+                const couponRequests = Object.entries(allClaimRequests)
+                    .filter(([, req]) => req && req.couponCode)
+                    .sort(([,a], [,b]) => new Date(b.approvalDate || b.requestDate) - new Date(a.approvalDate || a.requestDate));
+                
+                if (couponRequests.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="empty-msg">Abhi tak koi coupons issue nahi hue hain.</td></tr>';
+                    return;
+                }
+                
+                couponRequests.forEach(([key, req]) => {
+                    const tr = document.createElement('tr');
+                    const userHTML = `${req.userName || 'N/A'}<br><span class="user-details">${req.userMobile || 'N/A'}</span>`;
+                    const status = req.status === 'redeemed' ? 'redeemed' : 'approved';
+                    tr.innerHTML = `
+                        <td data-label="Coupon">${req.couponCode}</td>
+                        <td data-label="User">${userHTML}</td>
+                        <td data-label="Amount (₹)">${(req.claimAmount || 0).toFixed(2)}</td>
+                        <td data-label="Status"><span class="status status-${status}">${status}</span></td>
+                        <td class="action-buttons-cell">
+                            <button class="action-btn delete-btn" data-type="claim" data-action="delete" data-id="${key}">Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Error displaying coupons:", error);
+                tableBody.innerHTML = '<tr><td colspan="5" class="empty-msg">Data display karne mein error aayi.</td></tr>';
+            }
+        }
+
+        function createRow(id, req, type, view) {
+            const userHTML = `${req.userName || 'N/A'}<br><span class="user-details">${req.userMobile || 'N/A'}</span>`;
             if (view === 'pending') {
                 const amountLabel = type === 'cashback' ? `Price (₹)` : `Amount (₹)`;
-                const amountValue = type === 'cashback' ? req.productPrice.toFixed(2) : req.claimAmount.toFixed(2);
+                const amountValue = type === 'cashback' ? (req.productPrice || 0).toFixed(2) : (req.claimAmount || 0).toFixed(2);
                 const titleLabel = type === 'cashback' ? `Product` : `Request Date`;
                 const titleValue = type === 'cashback' ? req.productName : new Date(req.requestDate).toLocaleDateString();
                 return `<td data-label="User">${userHTML}</td>
@@ -390,10 +459,8 @@
                             <button class="action-btn reject-btn" data-type="${type}" data-action="reject" data-id="${id}">Reject</button>
                         </td>`;
             } else { // completed view
-                const amountLabel = type === 'cashback' ? `Price (₹)` : `Amount (₹)`;
-                const amountValue = type === 'cashback' ? req.productPrice.toFixed(2) : req.claimAmount.toFixed(2);
                 const titleLabel = type === 'cashback' ? `Product` : `Amount (₹)`;
-                const titleValue = type === 'cashback' ? req.productName : `₹${req.claimAmount.toFixed(2)}`;
+                const titleValue = type === 'cashback' ? req.productName : `₹${(req.claimAmount || 0).toFixed(2)}`;
                 return `<td data-label="User">${userHTML}</td>
                         <td data-label="${titleLabel}">${titleValue}</td>
                         <td data-label="Status"><span class="status status-${req.status}">${req.status}</span></td>
@@ -404,23 +471,104 @@
         }
 
         // --- Action Handlers ---
+        // FIXED: Unified event handler
         function handleAction(e) {
-            const target = e.target.closest('.action-btn'); // Use closest to handle clicks on icons inside buttons
-            if (!target) return;
-            const { type, action, id, days, userId, userMobile } = target.dataset;
-            if (!type || !action) return;
+            const navBtn = e.target.closest('.nav-btn');
+            if (navBtn) {
+                handleNavClick(navBtn);
+                return;
+            }
 
-            if (action === 'approve') approveRequest(type, id);
-            else if (action === 'reject') rejectRequest(type, id);
-            else if (action === 'delete') {
-                if (type === 'cleanup') handleBulkDelete(days);
-                else deleteEntry(type, id);
-            } else if (action === 'delete-customer') {
-                handleDeleteCustomer(userId, userMobile);
+            const actionBtn = e.target.closest('.action-btn');
+            if (actionBtn) {
+                const { type, action, id, days, userId, userMobile } = actionBtn.dataset;
+                if (!action) return;
+
+                switch (action) {
+                    case 'approve': approveRequest(type, id); break;
+                    case 'reject': rejectRequest(type, id); break;
+                    case 'delete':
+                        if (type === 'cleanup') handleBulkDelete(days);
+                        else deleteEntry(type, id);
+                        break;
+                    case 'delete-customer': handleDeleteCustomer(userId, userMobile); break;
+                    case 'redeem': redeemCoupon(id, actionBtn); break;
+                }
             }
         }
         
-        // --- NEW & UPDATED User Search ---
+        async function handleCouponSearch(e) {
+            e.preventDefault();
+            const couponCode = document.getElementById('coupon-code-input').value.trim();
+            const resultDiv = document.getElementById('redeem-result');
+            
+            if (!couponCode) {
+                resultDiv.innerHTML = `<div class="result-box error">Kripya coupon code daalein.</div>`;
+                return;
+            }
+            
+            resultDiv.innerHTML = `<div class="spinner" style="margin: 20px auto; width: 30px; height: 30px;"></div>`;
+
+            try {
+                const q = query(ref(database, 'claim_requests'), orderByChild('couponCode'), equalTo(couponCode));
+                const snapshot = await get(q);
+
+                if (!snapshot.exists()) {
+                    resultDiv.innerHTML = `<div class="result-box error">Coupon code galat hai ya exist nahi karta.</div>`;
+                    return;
+                }
+
+                let claimId = '';
+                let claimData = null;
+                snapshot.forEach((childSnapshot) => {
+                    claimId = childSnapshot.key;
+                    claimData = childSnapshot.val();
+                });
+
+                if (claimData.status === 'redeemed') {
+                    resultDiv.innerHTML = `<div class="result-box warning">Yeh coupon pehle hi ${new Date(claimData.redeemDate).toLocaleString()} ko redeem ho chuka hai.</div>`;
+                } else if (claimData.status === 'approved') {
+                    resultDiv.innerHTML = `
+                        <div class="result-box success">
+                            <h4>Valid Coupon Found!</h4>
+                            <p><strong>User:</strong> ${claimData.userName} (${claimData.userMobile})</p>
+                            <p><strong>Amount:</strong> ₹${(claimData.claimAmount || 0).toFixed(2)}</p>
+                            <button class="action-btn redeem-btn" data-action="redeem" data-id="${claimId}" style="margin-top: 10px;">Mark as Redeemed</button>
+                        </div>`;
+                } else {
+                     resultDiv.innerHTML = `<div class="result-box error">Yeh coupon abhi tak approve nahi hua hai (Status: ${claimData.status}).</div>`;
+                }
+
+            } catch (error) {
+                console.error("Coupon search error:", error);
+                resultDiv.innerHTML = `<div class="result-box error">Coupon search karne mein error aayi.</div>`;
+            }
+        }
+        
+        // FIXED: Now correctly handles the redeem action
+        async function redeemCoupon(claimId, buttonElement) {
+            if (buttonElement) {
+                buttonElement.disabled = true;
+                buttonElement.textContent = "Redeeming...";
+            }
+
+            try {
+                await update(ref(database, `claim_requests/${claimId}`), {
+                    status: 'redeemed',
+                    redeemDate: new Date().toISOString()
+                });
+                alert("Coupon safaltapoorvak redeem ho gaya!");
+                document.getElementById('redeem-result').innerHTML = `<div class="result-box success">Coupon successfully marked as redeemed.</div>`;
+            } catch (error) {
+                console.error("Redeem error:", error);
+                alert("Coupon redeem karne mein error aayi: " + error.message);
+                if (buttonElement) {
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = "Mark as Redeemed";
+                }
+            }
+        }
+
         async function handleUserSearch(e) {
             e.preventDefault();
             const mobile = document.getElementById('user-search-mobile').value;
@@ -452,19 +600,18 @@
 
                 let resultHTML = `
                     <h3>
-                        <span>${userData.name} - ${userData.mobile}</span>
+                        ${userData.name} - ${userData.mobile}
                         <a href="https://wa.me/91${userData.mobile}" target="_blank" class="whatsapp-icon" title="Chat on WhatsApp">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
-                             <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.89 7.89 0 0 0 13.6 2.326zM7.994 14.521a6.57 6.57 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592-.993 0-1.95-.211-2.805-.607zM11.568 9.471c-.225-.113-1.327-.655-1.533-.73-.205-.075-.354-.112-.504.112s-.58.729-.711.879-.262.168-.486.055c-.225-.113-.943-.349-1.796-1.113C6.225 7.455 5.8 6.826 5.69 6.578c-.112-.248-.012-.384.1- .504.1-.112.225-.281.336-.422.112-.141.149-.224.225-.374s.038-.281-.019-.398c-.056-.117-.505-1.217-.692-1.666-.181-.435-.366-.377-.504-.383a.97.97 0 0 0-.465-.021c-.187.006-.412.055-.612.248-.2.193-.768.748-.768 1.826s.787 2.121.899 2.272c.112.151 1.547 2.35 3.757 3.324.525.233.943.374 1.268.482.552.186 1.053.162 1.442.098.431-.07.943-.385 1.078-.748.135-.364.135-.678.098-.748s-.149-.112-.374-.224z"/>
-                           </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
+                                <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                            </svg>
                         </a>
                     </h3>
                     <p><strong>Wallet Balance:</strong> ₹${(userData.wallet || 0).toFixed(2)}</p>
-                    <p class="text-xs" style="color: #888;"><strong>User ID:</strong> ${userId}</p>
+                    <p class="user-details"><strong>User ID:</strong> ${userId}</p>
                     <div class="admin-actions">
                         <h4>Admin Actions</h4>
                         <button class="action-btn delete-btn" data-action="delete-customer" data-user-id="${userId}" data-user-mobile="${userData.mobile}">Delete Customer</button>
-                        <span style="font-size:12px; color:#888;">(Password reset functionality coming soon)</span>
                     </div>
                     <h4>Cashback History</h4>
                     ${generateHistoryTable(cashbackHistory, 'cashback')}
@@ -484,19 +631,18 @@
             if (type === 'cashback') {
                 table += '<tr><th>Date</th><th>Product</th><th>Price</th><th>Status</th></tr></thead><tbody>';
                 requests.sort((a,b) => new Date(b.requestDate) - new Date(a.requestDate)).forEach(r => {
-                    table += `<tr><td data-label="Date">${new Date(r.requestDate).toLocaleDateString()}</td><td data-label="Product">${r.productName}</td><td data-label="Price">₹${r.productPrice.toFixed(2)}</td><td data-label="Status"><span class="status status-${r.status}">${r.status}</span></td></tr>`;
+                    table += `<tr><td data-label="Date">${new Date(r.requestDate).toLocaleDateString()}</td><td data-label="Product">${r.productName}</td><td data-label="Price">₹${(r.productPrice || 0).toFixed(2)}</td><td data-label="Status"><span class="status status-${r.status}">${r.status}</span></td></tr>`;
                 });
             } else { // claim
                 table += '<tr><th>Date</th><th>Amount</th><th>Status</th><th>Coupon</th></tr></thead><tbody>';
                  requests.sort((a,b) => new Date(b.requestDate) - new Date(a.requestDate)).forEach(r => {
                     const coupon = r.couponCode ? r.couponCode : '---';
-                    table += `<tr><td data-label="Date">${new Date(r.requestDate).toLocaleDateString()}</td><td data-label="Amount">₹${r.claimAmount.toFixed(2)}</td><td data-label="Status"><span class="status status-${r.status}">${r.status}</span></td><td data-label="Coupon">${coupon}</td></tr>`;
+                    table += `<tr><td data-label="Date">${new Date(r.requestDate).toLocaleDateString()}</td><td data-label="Amount">₹${(r.claimAmount || 0).toFixed(2)}</td><td data-label="Status"><span class="status status-${r.status}">${r.status}</span></td><td data-label="Coupon">${coupon}</td></tr>`;
                 });
             }
             return table + '</tbody></table>';
         }
 
-        // --- NEW: Delete Customer Function ---
         async function handleDeleteCustomer(userId, userMobile) {
             if (!confirm(`WARNING!\nAap customer "${userMobile}" ko delete karne ja rahe hain.\nUnka saara data (profile, cashback history, claim history) hamesha ke liye delete ho jayega.\n\nKya aap sach mein is customer ko delete karna chahte hain?`)) {
                 return;
@@ -507,7 +653,6 @@
 
             try {
                 const updates = {};
-                // Mark paths for deletion
                 updates[`/users/${userId}`] = null;
                 updates[`/mobile_to_uid/${userMobile}`] = null;
 
@@ -522,7 +667,6 @@
                     }
                 });
 
-                // Perform multi-path delete
                 await update(ref(database), updates);
 
                 alert(`Customer ${userMobile} ka saara data database se safaltapoorvak delete kar diya gaya hai.\n\nIMPORTANT: Security ke liye, ab aapko Firebase Console ke 'Authentication' section mein jaakar is user ko manually delete karna hoga.`);
