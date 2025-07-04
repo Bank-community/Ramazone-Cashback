@@ -548,33 +548,59 @@
                 .catch(error => showErrorMessage(loginErrorMsg, "Galat mobile number ya password."));
         });
 
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            hideErrorMessage(registerErrorMsg);
-            const name = document.getElementById('reg-name').value.trim();
-            const mobile = document.getElementById('reg-mobile').value.trim();
-            const password = document.getElementById('reg-password').value.trim();
-            const email = `${mobile}@ramazone.com`;
-            if (!name || !/^\d{10}$/.test(mobile) || password.length < 6) {
-                showErrorMessage(registerErrorMsg, "Sahi details bharein. Password kam se kam 6 akshar ka hona chahiye.");
-                return;
-            }
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                await updateProfile(user, { displayName: name });
-                await set(ref(database, 'users/' + user.uid), { name: name, mobile: mobile, wallet: 0 });
-                alert("Registration safal hua! Ab aap login kar sakte hain.");
-                toggleView('login-view');
-                registerForm.reset();
-            } catch (error) {
-                if (error.code === 'auth/email-already-in-use') {
-                    showErrorMessage(registerErrorMsg, "Is mobile number se account pehle se hai.");
-                } else {
-                    showErrorMessage(registerErrorMsg, "Registration fail ho gaya. Dobara try karein.");
-                }
-            }
+        // --- This is the complete registration event listener ---
+
+registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideErrorMessage(registerErrorMsg);
+    
+    // 1. Get user input
+    const name = document.getElementById('reg-name').value.trim();
+    const mobile = document.getElementById('reg-mobile').value.trim();
+    const password = document.getElementById('reg-password').value.trim();
+    const email = `${mobile}@ramazone.com`; // Creates a unique email for Firebase Auth
+
+    // 2. Validate the input
+    if (!name || !/^\d{10}$/.test(mobile) || password.length < 6) {
+        showErrorMessage(registerErrorMsg, "Kripya sabhi details sahi se bharein. Password kam se kam 6 akshar ka hona chahiye.");
+        return;
+    }
+
+    try {
+        // 3. Create the user in Firebase Authentication
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        // 4. Set the user's display name
+        await updateProfile(user, { displayName: name });
+        
+        // 5. Save the main user data under their UID in the database
+        const userRef = ref(database, 'users/' + user.uid);
+        await set(userRef, {
+            name: name,
+            mobile: mobile,
+            wallet: 0
         });
+
+        // 6. **THIS IS THE KEY STEP**: Create the mobile-to-UID link for the admin panel
+        const mobileMapRef = ref(database, 'mobile_to_uid/' + mobile);
+        await set(mobileMapRef, user.uid);
+
+        // 7. Inform the user and reset the form
+        alert("Registration safal hua! Ab aap login kar sakte hain.");
+        toggleView('login');
+        registerForm.reset();
+        
+    } catch (error) {
+        console.error("Registration Error:", error);
+        if (error.code === 'auth/email-already-in-use') {
+            showErrorMessage(registerErrorMsg, "Is mobile number se account pehle se hai.");
+        } else {
+            showErrorMessage(registerErrorMsg, "Registration fail ho gaya. Kripya dobara try karein.");
+        }
+    }
+});
+
         
         logoutBtn.addEventListener('click', () => signOut(auth));
 
