@@ -198,12 +198,11 @@
 
         /* --- Animated Border --- */
         @keyframes rotate { 100% { transform: rotate(1turn); } }
-        /* UPDATED: Animated border applied directly to the card */
         .action-card.animated-border {
             position: relative;
             z-index: 1;
             overflow: hidden;
-            padding: 22px; /* Increased padding to make room for border */
+            padding: 22px; 
             border: none;
         }
         .action-card.animated-border::before {
@@ -346,7 +345,7 @@
                 </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
-                    <input type="number" id="login-password" required placeholder="••••••••">
+                    <input type="password" id="login-password" required placeholder="••••••••">
                 </div>
                 <button type="submit">Login</button>
                 <p id="login-error-msg" class="error-message"></p>
@@ -395,9 +394,7 @@
                 </div>
             </div>
 
-            <!-- UPDATED: Dashboard Actions Grid -->
             <div class="dashboard-actions">
-                <!-- UPDATED: Animated border is now a class on the card -->
                 <div id="open-cashback-modal" class="action-card cashback animated-border">
                     <div class="icon">🎁</div>
                     <p>Product Cashback</p>
@@ -1061,21 +1058,30 @@
             }
         });
         
+        // UPDATED: Share button with dynamic, enhanced message
         document.getElementById('wallet-share-btn').addEventListener('click', async () => {
+            const userName = auth.currentUser?.displayName || 'Ek Dost';
+            const lifetimeEarningEl = document.querySelector('#lifetime-earning .highlight-amount');
+            const lifetimeEarningText = lifetimeEarningEl ? lifetimeEarningEl.textContent : '₹0.00';
+            const appLink = window.location.href;
+
+            const shareMessage = `🎉 *Wow! Ek Zabardast Offer!* 🎉\n\nMaine, *${userName}* ne, Ramazone Cashback app se ab tak *${lifetimeEarningText}* ki bachat ki hai! 🤑\n\nAap bhi is app ko use karein aur har khareed par dher saare paise bachayein. Miss mat karna! 👇\n\n${appLink}\n\n✨ *Happy Shopping & Happy Saving!* ✨`;
+
             const shareData = {
-                title: 'Ramazone Cashback',
-                text: 'Is kamaal ke cashback app ko dekhein aur har khareed par paise bachayein!',
-                url: window.location.href
+                title: 'Ramazone Cashback Offer!',
+                text: shareMessage,
+                url: appLink
             };
+
             try {
                 if (navigator.share) {
                     await navigator.share(shareData);
                 } else {
-                    navigator.clipboard.writeText(shareData.url).then(() => {
-                        showToast('Link copied to clipboard!');
+                    navigator.clipboard.writeText(shareMessage).then(() => {
+                        showToast('Share message copied to clipboard!');
                     }).catch(err => {
                         console.error('Fallback copy failed: ', err);
-                        showToast('Link copy nahi ho saka.');
+                        showToast('Message copy nahi ho saka.');
                     });
                 }
             } catch (err) {
