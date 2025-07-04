@@ -27,6 +27,7 @@
             --accent-green: #2ecc71;
             --accent-yellow: #f1c40f;
             --whatsapp-green: #25D366;
+            --accent-purple: #9b59b6; 
         }
 
         /* --- Base Styles & Resets --- */
@@ -71,7 +72,7 @@
             background-color: #e8eef3;
             color: var(--text-primary-light);
         }
-        body[data-theme="light"] .animated-border-wrapper::before {
+        body[data-theme="light"] .action-card.animated-border::before {
             background-color: var(--bg-light-theme-card);
         }
         body[data-theme="light"] .header-actions .header-icon:hover {
@@ -118,28 +119,13 @@
         .header h1 { text-align: left; margin: 0; font-size: 22px; }
         .header-actions { display: flex; align-items: center; gap: 10px; }
         
-        /* NEW: Styles for header icons (Refresh & Theme) */
         .header-actions .header-icon {
-            font-size: 22px;
-            cursor: pointer;
-            line-height: 1;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background-color 0.2s, transform 0.2s;
-            user-select: none;
+            font-size: 22px; cursor: pointer; line-height: 1; padding: 8px;
+            border-radius: 50%; transition: background-color 0.2s, transform 0.2s; user-select: none;
         }
-        .header-actions .header-icon:hover {
-            background-color: var(--border-color-dark);
-            transform: scale(1.1);
-        }
-        .header-icon.refreshing {
-            animation: spin 1s ease-in-out;
-            pointer-events: none;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg) scale(1.1); }
-            to { transform: rotate(360deg) scale(1.1); }
-        }
+        .header-actions .header-icon:hover { background-color: var(--border-color-dark); transform: scale(1.1); }
+        .header-icon.refreshing { animation: spin 1s ease-in-out; pointer-events: none; }
+        @keyframes spin { from { transform: rotate(0deg) scale(1.1); } to { transform: rotate(360deg) scale(1.1); } }
 
         #logout-btn {
             width: auto; padding: 8px 15px; font-size: 14px; font-weight: 500; background: var(--bg-light);
@@ -155,14 +141,46 @@
             content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
             background-color: rgba(255,255,255,0.1); border-radius: 50%;
         }
-        .wallet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .wallet-header p { font-size: 16px; opacity: 0.9; }
+        .wallet-header { 
+            display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;
+        }
+        .wallet-header p { font-size: 16px; opacity: 0.9; margin: 0 0 4px 0; }
+        #lifetime-earning { font-size: 13px; font-weight: 500; opacity: 0.8; display: block; }
+        .highlight-amount {
+            font-weight: 700;
+            color: var(--accent-green);
+            text-shadow: 0 0 8px rgba(46, 204, 113, 0.7);
+        }
         #profile-icon {
             width: 50px; height: 50px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.9);
             color: #2980b9; font-size: 24px; font-weight: 600; display: flex; align-items: center; justify-content: center;
         }
         #wallet-balance { font-size: 40px; font-weight: 700; margin-bottom: 5px; }
         #user-mobile { opacity: 0.8; font-size: 14px; }
+        
+        .wallet-share {
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .wallet-share:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        .wallet-share .share-icon {
+            font-size: 22px;
+        }
+        .wallet-share .share-text {
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 2px;
+        }
 
         .dashboard-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
         .action-card {
@@ -175,20 +193,49 @@
         .action-card.cashback .icon { color: var(--accent-blue); }
         .action-card.coupons .icon { color: var(--brand-red); }
         .action-card.pending .icon { color: var(--accent-yellow); }
-        .action-card.profile .icon { color: #9b59b6; }
+        .action-card.profile .icon { color: #8e44ad; }
         .action-card.whatsapp .icon { color: var(--whatsapp-green); }
 
         /* --- Animated Border --- */
         @keyframes rotate { 100% { transform: rotate(1turn); } }
-        .animated-border-wrapper { position: relative; z-index: 1; overflow: hidden; border-radius: 12px; padding: 2px; }
-        .animated-border-wrapper::before {
-            content: ''; position: absolute; z-index: -2; left: -50%; top: -50%; width: 200%; height: 200%;
-            background-color: var(--bg-light); background-repeat: no-repeat; background-size: 50% 50%, 50% 50%;
+        /* UPDATED: Animated border applied directly to the card */
+        .action-card.animated-border {
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            padding: 22px; /* Increased padding to make room for border */
+            border: none;
+        }
+        .action-card.animated-border::before {
+            content: '';
+            position: absolute;
+            z-index: -2;
+            left: -50%;
+            top: -50%;
+            width: 200%;
+            height: 200%;
+            background-color: var(--bg-light);
+            background-repeat: no-repeat;
+            background-size: 50% 50%, 50% 50%;
             background-position: 0 0, 100% 0, 100% 100%, 0 100%;
-            background-image: linear-gradient(var(--accent-yellow), var(--accent-yellow)), linear-gradient(white, white), linear-gradient(var(--accent-yellow), var(--accent-yellow)), linear-gradient(white, white);
+            background-image: linear-gradient(var(--accent-yellow), var(--accent-yellow)), linear-gradient(var(--accent-green), var(--accent-green)), linear-gradient(var(--accent-yellow), var(--accent-yellow)), linear-gradient(var(--accent-green), var(--accent-green)));
             animation: rotate 4s linear infinite;
         }
-        .animated-border-wrapper > .action-card { border: none; }
+         .action-card.animated-border::after {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            left: 2px;
+            top: 2px;
+            width: calc(100% - 4px);
+            height: calc(100% - 4px);
+            background: var(--bg-light);
+            border-radius: 10px;
+        }
+        body[data-theme="light"] .action-card.animated-border::after {
+            background: var(--bg-light-theme-card);
+        }
+
 
         .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: var(--text-secondary-dark); }
         .history-list { display: flex; flex-direction: column; gap: 12px; }
@@ -252,12 +299,34 @@
         .profile-info #profile-modal-mobile { font-size: 16px; color: var(--text-secondary-dark); }
         #password-change-form { border-top: 1px solid var(--border-color-dark); padding-top: 20px; margin-top: 20px; }
         
+        /* Toast Notification Style */
+        .toast-notification {
+            position: fixed;
+            bottom: -100px; /* Initially hidden */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent-green);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 500;
+            z-index: 2000;
+            transition: bottom 0.5s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .toast-notification.show {
+            bottom: 30px; /* Slide in */
+        }
+
         /* Mobile Full Screen Adjustments */
         @media (max-width: 600px) {
             body { padding: 0; }
             .container { max-width: 100%; }
             .view { border-radius: 0; min-height: 100vh; }
             .main-headline { margin-top: 40px; }
+            .dashboard-actions { grid-template-columns: 1fr 1fr; } 
+            .action-card p { font-size: 13px; }
         }
 
     </style>
@@ -277,7 +346,7 @@
                 </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
-                    <input type="password" id="login-password" required placeholder="••••••••">
+                    <input type="number" id="login-password" required placeholder="••••••••">
                 </div>
                 <button type="submit">Login</button>
                 <p id="login-error-msg" class="error-message"></p>
@@ -303,7 +372,6 @@
         <div id="dashboard-view" class="view">
             <div class="header">
                 <h1 id="user-name">Welcome!</h1>
-                <!-- UPDATED: Added refresh button and classes to icons -->
                 <div class="header-actions">
                     <div id="refresh-btn" class="header-icon" title="Refresh Data">🔄</div>
                     <div id="theme-switcher" class="header-icon" title="Toggle Theme">☀️</div>
@@ -313,19 +381,26 @@
             
             <div class="wallet-card">
                 <div class="wallet-header">
-                    <p>Wallet Balance</p>
+                    <div>
+                        <p>Wallet Balance</p>
+                        <small id="lifetime-earning">Lifetime Earning: <span class="highlight-amount">₹0.00</span></small>
+                    </div>
                     <div id="profile-icon"></div>
                 </div>
                 <p id="wallet-balance">₹ 0.00</p>
                 <small id="user-mobile"></small>
+                <div id="wallet-share-btn" class="wallet-share" title="Share App">
+                    <span class="share-icon">🔗</span>
+                    <span class="share-text">Share</span>
+                </div>
             </div>
 
+            <!-- UPDATED: Dashboard Actions Grid -->
             <div class="dashboard-actions">
-                <div class="animated-border-wrapper">
-                    <div id="open-cashback-modal" class="action-card cashback">
-                        <div class="icon">🎁</div>
-                        <p>Product Cashback</p>
-                    </div>
+                <!-- UPDATED: Animated border is now a class on the card -->
+                <div id="open-cashback-modal" class="action-card cashback animated-border">
+                    <div class="icon">🎁</div>
+                    <p>Product Cashback</p>
                 </div>
                 <div id="open-claim-modal" class="action-card claim">
                      <div class="icon">💸</div>
@@ -339,14 +414,14 @@
                      <div class="icon">⏳</div>
                     <p>Pending Requests</p>
                 </div>
-                 <a href="https://wa.me/917903698180?text=Ramazone%20cashback%0A%0AHelp%20me!" target="_blank" class="action-card whatsapp">
-                    <div class="icon">💬</div>
-                    <p>WhatsApp Support</p>
-                </a>
                  <div id="open-profile-modal" class="action-card profile">
                      <div class="icon">👤</div>
                     <p>My Profile</p>
                 </div>
+                 <a href="https://wa.me/917903698180?text=Ramazone%20cashback%0A%0AHelp%20me!" target="_blank" class="action-card whatsapp">
+                    <div class="icon">💬</div>
+                    <p>WhatsApp Support</p>
+                </a>
             </div>
 
             <div class="section">
@@ -461,10 +536,12 @@
             </div>
         </div>
     </div>
+    
+    <!-- Toast Notification Element -->
+    <div id="toast-notification" class="toast-notification"></div>
 
 
     <script type="module">
-        // Added updatePassword import
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getDatabase, ref, get, set, push, onValue, runTransaction, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
@@ -490,7 +567,7 @@
         const loginErrorMsg = document.getElementById('login-error-msg');
         const registerErrorMsg = document.getElementById('register-error-msg');
         const themeSwitcher = document.getElementById('theme-switcher');
-        const refreshBtn = document.getElementById('refresh-btn'); // NEW: Refresh button
+        const refreshBtn = document.getElementById('refresh-btn');
         
         // Modals & Forms
         const passwordModal = document.getElementById('password-modal');
@@ -519,7 +596,6 @@
         let activeListeners = [];
         let tempClaimAmount = 0;
         
-        // NEW: State variables for data snapshots
         let claimsDataSnapshot = null;
         let cashbackDataSnapshot = null;
 
@@ -541,6 +617,15 @@
 
         function openModal(modalElement) { modalElement.classList.add('active'); }
         function closeModal(modalElement) { modalElement.classList.remove('active'); }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-notification');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000); 
+        }
 
         // --- Theme Management ---
         function applyTheme(theme) {
@@ -587,18 +672,29 @@
             const mobile = document.getElementById('reg-mobile').value.trim();
             const password = document.getElementById('reg-password').value.trim();
             const email = `${mobile}@ramazone.com`;
+
             if (!name || !/^\d{10}$/.test(mobile) || password.length < 6) {
                 showErrorMessage(registerErrorMsg, "Kripya sabhi details sahi se bharein. Password kam se kam 6 akshar ka hona chahiye.");
                 return;
             }
+
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
+
                 await updateProfile(user, { displayName: name });
+                
                 const userRef = ref(database, 'users/' + user.uid);
-                await set(userRef, { name: name, mobile: mobile, wallet: 0 });
+                const userData = { 
+                    name: name, 
+                    mobile: mobile, 
+                    wallet: 0,
+                };
+                await set(userRef, userData);
+
                 const mobileMapRef = ref(database, 'mobile_to_uid/' + mobile);
                 await set(mobileMapRef, user.uid);
+
                 alert("Registration safal hua! Ab aap login kar sakte hain.");
                 toggleView('login-view');
                 registerForm.reset();
@@ -616,7 +712,6 @@
 
         // --- Real-time Data & Rendering ---
 
-        // NEW: Unified rendering function
         function renderAllViews() {
             if (claimsDataSnapshot && cashbackDataSnapshot) {
                 renderUnifiedHistory(claimsDataSnapshot, cashbackDataSnapshot);
@@ -625,11 +720,9 @@
             }
         }
 
-        // UPDATED: More robust listener attachment
         function attachRealtimeListeners(user) {
-            detachAllListeners(); // Clear old listeners first
+            detachAllListeners(); 
 
-            // User data listener
             const userDbRef = ref(database, 'users/' + user.uid);
             const userUnsubscribe = onValue(userDbRef, (snapshot) => {
                 if(snapshot.exists()){
@@ -639,7 +732,6 @@
             });
             activeListeners.push(userUnsubscribe);
 
-            // Claims listener
             const claimsQuery = query(ref(database, 'claim_requests'), orderByChild('userId'), equalTo(user.uid));
             const claimsUnsubscribe = onValue(claimsQuery, (snapshot) => {
                 claimsDataSnapshot = snapshot;
@@ -647,16 +739,24 @@
             });
             activeListeners.push(claimsUnsubscribe);
 
-            // Cashback listener
             const cashbackQuery = query(ref(database, 'cashback_requests'), orderByChild('userId'), equalTo(user.uid));
             const cashbackUnsubscribe = onValue(cashbackQuery, (snapshot) => {
                 cashbackDataSnapshot = snapshot;
+                
+                let lifetimeEarning = 0;
+                snapshot.forEach(child => {
+                    const req = child.val();
+                    if (req.status === 'approved') {
+                        lifetimeEarning += parseFloat(req.cashbackAmount || 0);
+                    }
+                });
+                document.getElementById('lifetime-earning').innerHTML = `Lifetime Earning: <span class="highlight-amount">₹${lifetimeEarning.toFixed(2)}</span>`;
+
                 renderAllViews();
             });
             activeListeners.push(cashbackUnsubscribe);
         }
 
-        // UPDATED: Correctly detaches all listeners
         function detachAllListeners() {
             activeListeners.forEach(unsubscribe => unsubscribe());
             activeListeners = [];
@@ -667,13 +767,10 @@
             cashbackSubmitBtn.disabled = true;
         }
         
-        // NEW: Refresh data function
         function refreshData() {
             if (!auth.currentUser) return;
             refreshBtn.classList.add('refreshing');
-            // Re-attaching listeners will fetch the latest data
             attachRealtimeListeners(auth.currentUser);
-            // Give visual feedback
             setTimeout(() => {
                 refreshBtn.classList.remove('refreshing');
             }, 1000);
@@ -744,7 +841,6 @@
             });
         }
         
-        // UPDATED: Displays coupon amount
         function renderCouponsModal(claimSnapshot) {
             const list = document.getElementById('coupons-list');
             list.innerHTML = '';
@@ -857,7 +953,7 @@
                 if (transactionResult.committed) {
                     const newClaimRef = push(ref(database, "claim_requests"));
                     await set(newClaimRef, { claimId: newClaimRef.key, userMobile: currentUserData.mobile, userName: auth.currentUser.displayName, claimAmount: tempClaimAmount, status: "pending", requestDate: (new Date).toISOString(), userId: auth.currentUser.uid });
-                    alert("Request safaltapoorvak bhej diya gaya hai!");
+                    showToast("Request safaltapoorvak bhej diya gaya hai!");
                     closeModal(passwordModal);
                     claimRequestForm.reset();
                 } else {
@@ -882,7 +978,7 @@
             const newRequestRef=push(ref(database,"cashback_requests"));
             try{
                 await set(newRequestRef,{ requestId:newRequestRef.key, userMobile:currentUserData.mobile, userName:auth.currentUser.displayName, productName:productName, productPrice:productPrice, cashbackAmount:cashbackAmount, status:"pending", requestDate:(new Date).toISOString(), userId: auth.currentUser.uid });
-                alert("Product cashback request safaltapoorvak submit ho gaya!");
+                showToast("Cashback request submit ho gaya!");
                 cashbackRequestForm.reset();
                 closeModal(cashbackModal);
             } catch(err){
@@ -915,7 +1011,7 @@
             try {
                 await reauthenticateWithCredential(user, credential);
                 await updatePassword(user, newPassword);
-                alert("Password safaltapoorvak badal gaya hai!");
+                showToast("Password safaltapoorvak badal gaya hai!");
                 passwordChangeForm.reset();
                 closeModal(profileModal);
             } catch (error) {
@@ -929,7 +1025,6 @@
         document.getElementById('show-register-link').addEventListener('click', (e) => { e.preventDefault(); toggleView('registration-view'); });
         document.getElementById('show-login-link').addEventListener('click', (e) => { e.preventDefault(); toggleView('login-view'); });
         
-        // NEW: Refresh button listener
         refreshBtn.addEventListener('click', refreshData);
 
         // Modal Triggers
@@ -955,20 +1050,36 @@
         document.getElementById('coupons-list').addEventListener('click', (e) => {
             if (e.target && e.target.classList.contains('copy-btn')) {
                 const coupon = e.target.dataset.coupon;
-                try {
-                    const tempInput = document.createElement('input');
-                    tempInput.value = coupon;
-                    document.body.appendChild(tempInput);
-                    tempInput.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(tempInput);
-                    
-                    e.target.textContent = '✅ Copied!';
-                    setTimeout(() => { e.target.textContent = '📋 Copy'; }, 2000);
-                } catch (err) {
+                const button = e.target;
+                navigator.clipboard.writeText(coupon).then(() => {
+                    button.textContent = '✅ Copied!';
+                    setTimeout(() => { button.textContent = '📋 Copy'; }, 2000);
+                }).catch(err => {
                     console.error('Failed to copy: ', err);
-                    alert('Coupon copy karne mein error aayi.');
+                    showToast('Coupon copy karne mein error aayi.');
+                });
+            }
+        });
+        
+        document.getElementById('wallet-share-btn').addEventListener('click', async () => {
+            const shareData = {
+                title: 'Ramazone Cashback',
+                text: 'Is kamaal ke cashback app ko dekhein aur har khareed par paise bachayein!',
+                url: window.location.href
+            };
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    navigator.clipboard.writeText(shareData.url).then(() => {
+                        showToast('Link copied to clipboard!');
+                    }).catch(err => {
+                        console.error('Fallback copy failed: ', err);
+                        showToast('Link copy nahi ho saka.');
+                    });
                 }
+            } catch (err) {
+                console.error('Share failed:', err);
             }
         });
         
