@@ -28,6 +28,7 @@
             --accent-yellow: #f1c40f;
             --whatsapp-green: #25D366;
             --accent-purple: #9b59b6; 
+            --shiny-green: #2eff71;
         }
 
         /* --- Base Styles & Resets --- */
@@ -71,9 +72,6 @@
         body[data-theme="light"] #logout-btn, body[data-theme="light"] .btn-secondary {
             background-color: #e8eef3;
             color: var(--text-primary-light);
-        }
-        body[data-theme="light"] .action-card.animated-border::before {
-            background-color: var(--bg-light-theme-card);
         }
         body[data-theme="light"] .header-actions .header-icon:hover {
             background-color: #e8eef3;
@@ -148,8 +146,7 @@
         #lifetime-earning { font-size: 13px; font-weight: 500; opacity: 0.8; display: block; }
         .highlight-amount {
             font-weight: 700;
-            color: var(--accent-green);
-            text-shadow: 0 0 8px rgba(46, 204, 113, 0.7);
+            color: var(--shiny-green); 
         }
         #profile-icon {
             width: 50px; height: 50px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.9);
@@ -158,6 +155,12 @@
         #wallet-balance { font-size: 40px; font-weight: 700; margin-bottom: 5px; }
         #user-mobile { opacity: 0.8; font-size: 14px; }
         
+        @keyframes pulse-shake {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            5%, 15% { transform: scale(1.1) rotate(-5deg); }
+            10%, 20% { transform: scale(1.1) rotate(5deg); }
+            25% { transform: scale(1.1) rotate(0deg); }
+        }
         .wallet-share {
             position: absolute;
             bottom: 20px;
@@ -168,10 +171,12 @@
             cursor: pointer;
             opacity: 0.8;
             transition: opacity 0.2s, transform 0.2s;
+            animation: pulse-shake 5s infinite ease-in-out; 
         }
         .wallet-share:hover {
             opacity: 1;
             transform: scale(1.1);
+            animation-play-state: paused; 
         }
         .wallet-share .share-icon {
             font-size: 22px;
@@ -195,6 +200,11 @@
         .action-card.pending .icon { color: var(--accent-yellow); }
         .action-card.profile .icon { color: #8e44ad; }
         .action-card.whatsapp .icon { color: var(--whatsapp-green); }
+        /* NEW: Style for two-line text */
+        .action-card .card-text {
+            font-weight: 600;
+            line-height: 1.3;
+        }
 
         /* --- Animated Border --- */
         @keyframes rotate { 100% { transform: rotate(1turn); } }
@@ -202,7 +212,6 @@
             position: relative;
             z-index: 1;
             overflow: hidden;
-            padding: 22px; 
             border: none;
         }
         .action-card.animated-border::before {
@@ -213,12 +222,16 @@
             top: -50%;
             width: 200%;
             height: 200%;
-            background-color: var(--bg-light);
+            /* UPDATED: Default border for Dark Mode */
+            background-image: linear-gradient(white, white), linear-gradient(var(--accent-yellow), var(--accent-yellow)), linear-gradient(white, white), linear-gradient(var(--accent-yellow), var(--accent-yellow)));
             background-repeat: no-repeat;
             background-size: 50% 50%, 50% 50%;
             background-position: 0 0, 100% 0, 100% 100%, 0 100%;
-            background-image: linear-gradient(var(--accent-yellow), var(--accent-yellow)), linear-gradient(var(--accent-green), var(--accent-green)), linear-gradient(var(--accent-yellow), var(--accent-yellow)), linear-gradient(var(--accent-green), var(--accent-green)));
             animation: rotate 4s linear infinite;
+        }
+        /* UPDATED: Border for Light Mode */
+        body[data-theme="light"] .action-card.animated-border::before {
+             background-image: linear-gradient(black, black), linear-gradient(black, black), linear-gradient(black, black), linear-gradient(black, black));
         }
          .action-card.animated-border::after {
             content: '';
@@ -234,7 +247,6 @@
         body[data-theme="light"] .action-card.animated-border::after {
             background: var(--bg-light-theme-card);
         }
-
 
         .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: var(--text-secondary-dark); }
         .history-list { display: flex; flex-direction: column; gap: 12px; }
@@ -345,7 +357,7 @@
                 </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
-                    <input type="password" id="login-password" required placeholder="••••••••">
+                    <input type="number" id="login-password" required placeholder="••••••••">
                 </div>
                 <button type="submit">Login</button>
                 <p id="login-error-msg" class="error-message"></p>
@@ -397,7 +409,11 @@
             <div class="dashboard-actions">
                 <div id="open-cashback-modal" class="action-card cashback animated-border">
                     <div class="icon">🎁</div>
-                    <p>Product Cashback</p>
+                    <!-- UPDATED: Text on two lines -->
+                    <div class="card-text">
+                        <strong>Cashback</strong>
+                        <strong>Request</strong>
+                    </div>
                 </div>
                 <div id="open-claim-modal" class="action-card claim">
                      <div class="icon">💸</div>
@@ -467,7 +483,7 @@
 
     <div id="cashback-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3>Product Cashback Request</h3>
+            <h3>Cashback Request</h3>
              <p class="modal-description">Product details bharein. 2% cashback request kiya jayega.</p>
             <form id="cashback-request-form">
                 <div class="form-group"><label for="product-name">Product ka Naam</label><input type="text" id="product-name" required></div>
@@ -1058,7 +1074,6 @@
             }
         });
         
-        // UPDATED: Share button with dynamic, enhanced message
         document.getElementById('wallet-share-btn').addEventListener('click', async () => {
             const userName = auth.currentUser?.displayName || 'Ek Dost';
             const lifetimeEarningEl = document.querySelector('#lifetime-earning .highlight-amount');
