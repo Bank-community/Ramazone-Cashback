@@ -190,7 +190,7 @@
         .dashboard-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
         .action-card {
             background-color: var(--bg-light); padding: 20px; border-radius: 12px; text-align: center; cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s; border: 1px solid var(--border-color-dark); position: relative; z-index: 2; aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-decoration: none; color: inherit;
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s; border: 1px solid var(--border-color-dark); position: relative; z-index: 2; aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-decoration: none; color: inherit;
         }
         .action-card:hover { transform: translateY(-5px); background-color: var(--border-color-dark); }
         .action-card .icon { font-size: 28px; margin-bottom: 10px; }
@@ -200,13 +200,24 @@
         .action-card.pending .icon { color: var(--accent-yellow); }
         .action-card.profile .icon { color: #8e44ad; }
         .action-card.whatsapp .icon { color: var(--whatsapp-green); }
-        /* NEW: Style for two-line text */
         .action-card .card-text {
             font-weight: 600;
             line-height: 1.3;
         }
 
-        /* --- Animated Border --- */
+        /* --- NEW: Gift Icon Animation --- */
+        @keyframes gift-pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            5%, 15% { transform: scale(1.1) rotate(-3deg); }
+            10%, 20% { transform: scale(1.1) rotate(3deg); }
+            25% { transform: scale(1.1) rotate(0deg); }
+        }
+        .action-card.cashback .icon {
+            animation: gift-pulse 4s infinite ease-in-out;
+            animation-delay: 1s;
+        }
+
+        /* --- UPDATED: Animated Border with Conic Gradient --- */
         @keyframes rotate { 100% { transform: rotate(1turn); } }
         .action-card.animated-border {
             position: relative;
@@ -222,16 +233,25 @@
             top: -50%;
             width: 200%;
             height: 200%;
-            /* UPDATED: Default border for Dark Mode */
-            background-image: linear-gradient(white, white), linear-gradient(var(--accent-yellow), var(--accent-yellow)), linear-gradient(white, white), linear-gradient(var(--accent-yellow), var(--accent-yellow)));
-            background-repeat: no-repeat;
-            background-size: 50% 50%, 50% 50%;
-            background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0%, transparent 70%,
+                var(--accent-yellow),
+                white,
+                var(--accent-yellow),
+                transparent 100%
+            );
             animation: rotate 4s linear infinite;
         }
-        /* UPDATED: Border for Light Mode */
         body[data-theme="light"] .action-card.animated-border::before {
-             background-image: linear-gradient(black, black), linear-gradient(black, black), linear-gradient(black, black), linear-gradient(black, black));
+             background: conic-gradient(
+                from 0deg,
+                transparent 0%, transparent 70%,
+                var(--accent-yellow),
+                #555,
+                var(--accent-yellow),
+                transparent 100%
+            );
         }
          .action-card.animated-border::after {
             content: '';
@@ -246,6 +266,24 @@
         }
         body[data-theme="light"] .action-card.animated-border::after {
             background: var(--bg-light-theme-card);
+        }
+
+        /* --- NEW: Card Click Animation --- */
+        .action-card.clicked-effect {
+            animation: click-border-pulse 0.5s ease-out;
+        }
+        @keyframes click-border-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+            50% { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3); }
+            100% { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0); }
+        }
+        body[data-theme="light"] .action-card.clicked-effect {
+            animation-name: click-border-pulse-light;
+        }
+        @keyframes click-border-pulse-light {
+             0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+            50% { box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15); }
+            100% { box-shadow: 0 0 0 8px rgba(0, 0, 0, 0); }
         }
 
         .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: var(--text-secondary-dark); }
@@ -357,7 +395,7 @@
                 </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
-                    <input type="number" id="login-password" required placeholder="••••••••">
+                    <input type="password" id="login-password" required placeholder="••••••••">
                 </div>
                 <button type="submit">Login</button>
                 <p id="login-error-msg" class="error-message"></p>
@@ -409,7 +447,6 @@
             <div class="dashboard-actions">
                 <div id="open-cashback-modal" class="action-card cashback animated-border">
                     <div class="icon">🎁</div>
-                    <!-- UPDATED: Text on two lines -->
                     <div class="card-text">
                         <strong>Cashback</strong>
                         <strong>Request</strong>
@@ -702,6 +739,7 @@
                     name: name, 
                     mobile: mobile, 
                     wallet: 0,
+                    lifetimeEarning: 0 
                 };
                 await set(userRef, userData);
 
@@ -756,14 +794,29 @@
             const cashbackUnsubscribe = onValue(cashbackQuery, (snapshot) => {
                 cashbackDataSnapshot = snapshot;
                 
-                let lifetimeEarning = 0;
+                const userLifetimeEarningRef = ref(database, `users/${user.uid}/lifetimeEarning`);
                 snapshot.forEach(child => {
                     const req = child.val();
-                    if (req.status === 'approved') {
-                        lifetimeEarning += parseFloat(req.cashbackAmount || 0);
+                    const reqKey = child.key;
+
+                    if (req.status === 'approved' && !req.countedForLifetime) {
+                        const cashbackAmount = parseFloat(req.cashbackAmount || 0);
+
+                        if (cashbackAmount > 0) {
+                            runTransaction(userLifetimeEarningRef, (currentValue) => {
+                                return (currentValue || 0) + cashbackAmount;
+                            }).then(() => {
+                                const requestCountedRef = ref(database, `cashback_requests/${reqKey}/countedForLifetime`);
+                                set(requestCountedRef, true);
+                            }).catch((error) => {
+                                console.error("Could not update lifetime earning for transaction. Will retry on next data load.", error);
+                            });
+                        } else {
+                            const requestCountedRef = ref(database, `cashback_requests/${reqKey}/countedForLifetime`);
+                            set(requestCountedRef, true);
+                        }
                     }
                 });
-                document.getElementById('lifetime-earning').innerHTML = `Lifetime Earning: <span class="highlight-amount">₹${lifetimeEarning.toFixed(2)}</span>`;
 
                 renderAllViews();
             });
@@ -793,9 +846,13 @@
         function updateDashboardUI(dbData, authUser) {
             if (!dbData || !authUser) return;
             const walletBalance = parseFloat(dbData.wallet || 0);
+            const lifetimeEarning = parseFloat(dbData.lifetimeEarning || 0);
+
             document.getElementById('user-name').textContent = `Welcome, ${authUser.displayName}!`;
             document.getElementById('user-mobile').textContent = `Mobile: ${dbData.mobile}`;
             document.getElementById('wallet-balance').textContent = `₹ ${walletBalance.toFixed(2)}`;
+            document.getElementById('lifetime-earning').innerHTML = `Lifetime Earning: <span class="highlight-amount">₹${lifetimeEarning.toFixed(2)}</span>`;
+
             const openClaimModalBtn = document.getElementById('open-claim-modal');
             openClaimModalBtn.style.opacity = walletBalance >= 10 ? '1' : '0.5';
             openClaimModalBtn.style.pointerEvents = walletBalance >= 10 ? 'auto' : 'none';
@@ -1034,7 +1091,24 @@
         }
 
         // --- Initial Event Listeners ---
-        document.addEventListener('DOMContentLoaded', initTheme);
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+
+            // NEW: Add click animation listener to all action cards
+            document.querySelectorAll('.action-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Prevent animation on the link card if you want instant navigation
+                    if (card.tagName.toLowerCase() === 'a') {
+                        return;
+                    }
+                    card.classList.add('clicked-effect');
+                    card.addEventListener('animationend', () => {
+                        card.classList.remove('clicked-effect');
+                    }, { once: true });
+                });
+            });
+        });
+
         document.getElementById('show-register-link').addEventListener('click', (e) => { e.preventDefault(); toggleView('registration-view'); });
         document.getElementById('show-login-link').addEventListener('click', (e) => { e.preventDefault(); toggleView('login-view'); });
         
