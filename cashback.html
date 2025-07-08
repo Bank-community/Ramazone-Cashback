@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramazone Cashback</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #121828;
+            --bg-light: #1B2133;
+            --text-primary-dark: #ffffff;
+            --text-secondary-dark: #a9b1c8;
+            --border-color-dark: #2c344a;
+
+            --bg-light-theme: #f4f7f9;
+            --bg-light-theme-card: #ffffff;
+            --text-primary-light: #1c2028;
+            --text-secondary-light: #5a647e;
+            --border-color-light: #e8eef3;
+            
+            --brand-red: #e50914;
+            --brand-red-hover: #f40612;
+            --accent-blue: #3498db;
+            --accent-green: #2ecc71;
+            --accent-yellow: #f1c40f;
+            --whatsapp-green: #25D366;
+            --accent-purple: #9b59b6; 
+            --shiny-green: #2eff71;
+        }
+
+        /* --- Base Styles & Resets --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary-dark);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100%;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* --- Light Theme --- */
+        body[data-theme="light"] {
+            background-color: var(--bg-light-theme);
+            color: var(--text-primary-light);
+        }
+        body[data-theme="light"] .main-headline .part2 { color: var(--text-primary-light); }
+        body[data-theme="light"] .view, body[data-theme="light"] .action-card, body[data-theme="light"] .modal-content, body[data-theme="light"] .history-item {
+            background-color: var(--bg-light-theme-card);
+            border-color: var(--border-color-light);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        body[data-theme="light"] input {
+            background-color: var(--bg-light-theme);
+            border-color: var(--border-color-light);
+            color: var(--text-primary-light);
+        }
+        body[data-theme="light"] label, body[data-theme="light"] .form-link, body[data-theme="light"] .section-title, body[data-theme="light"] .modal-description, body[data-theme="light"] .history-info .date {
+            color: var(--text-secondary-light);
+        }
+        body[data-theme="light"] #logout-btn, body[data-theme="light"] .btn-secondary {
+            background-color: #e8eef3;
+            color: var(--text-primary-light);
+        }
+        body[data-theme="light"] .header-actions .header-icon:hover {
+            background-color: #e8eef3;
+        }
+
+        .container { width: 100%; max-width: 500px; padding: 0; }
+
+        /* --- Logo / Main Headline --- */
+        .main-headline { font-size: 32px; font-weight: 700; text-align: center; margin: 20px 0 40px 0; }
+        .main-headline .part1 { color: var(--brand-red); }
+        .main-headline .part2 { color: var(--text-primary-dark); }
+
+        /* --- View Transitions --- */
+        .view { display: none; padding: 20px; }
+        .view.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Forms & Inputs --- */
+        h1 { text-align: center; font-size: 24px; font-weight: 600; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; position: relative; }
+        label { font-weight: 500; color: var(--text-secondary-dark); font-size: 14px; margin-bottom: 8px; display: block; }
+        input[type="text"], input[type="tel"], input[type="password"], input[type="number"] {
+            width: 100%; padding: 14px; background-color: var(--bg-light); border: 1px solid var(--border-color-dark);
+            border-radius: 8px; color: var(--text-primary-dark); font-size: 16px; transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input:focus { outline: none; border-color: var(--brand-red); box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.25); }
+        button {
+            width: 100%; padding: 15px; background: linear-gradient(90deg, var(--brand-red), #f64d54); color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.3s; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(229, 9, 20, 0.2); }
+        button:disabled { background: #555; cursor: not-allowed; opacity: 0.7; box-shadow: none; transform: none; }
+        .form-link { text-align: center; margin-top: 25px; color: var(--text-secondary-dark); }
+        .form-link a { color: var(--brand-red); text-decoration: none; font-weight: 600; }
+        .error-message {
+            color: #ff6b6b; font-size: 14px; text-align: center; margin-top: 15px; display: none;
+            background-color: rgba(255, 107, 107, 0.1); padding: 10px; border-radius: 6px;
+        }
+
+        /* --- Dashboard --- */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .header h1 { text-align: left; margin: 0; font-size: 22px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        
+        .header-actions .header-icon {
+            font-size: 22px; cursor: pointer; line-height: 1; padding: 8px;
+            border-radius: 50%; transition: background-color 0.2s, transform 0.2s; user-select: none;
+        }
+        .header-actions .header-icon:hover { background-color: var(--border-color-dark); transform: scale(1.1); }
+        .header-icon.refreshing { animation: spin 1s ease-in-out; pointer-events: none; }
+        @keyframes spin { from { transform: rotate(0deg) scale(1.1); } to { transform: rotate(360deg) scale(1.1); } }
+
+        #logout-btn {
+            width: auto; padding: 8px 15px; font-size: 14px; font-weight: 500; background: var(--bg-light);
+            text-transform: none; letter-spacing: 0; box-shadow: none;
+        }
+        #logout-btn:hover { background: var(--border-color-dark); transform: none; box-shadow: none; }
+
+        .wallet-card {
+            background: linear-gradient(135deg, #2980b9, #3498db); color: white; padding: 25px;
+            border-radius: 16px; margin-bottom: 30px; position: relative; overflow: hidden;
+        }
+        .wallet-card::before {
+            content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
+            background-color: rgba(255,255,255,0.1); border-radius: 50%;
+        }
+        .wallet-header { 
+            display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;
+        }
+        .wallet-header p { font-size: 16px; opacity: 0.9; margin: 0 0 4px 0; }
+        #lifetime-earning { font-size: 13px; font-weight: 500; opacity: 0.8; display: block; }
+        .highlight-amount {
+            font-weight: 700;
+            color: var(--shiny-green); 
+        }
+        #profile-icon {
+            width: 50px; height: 50px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.9);
+            color: #2980b9; font-size: 24px; font-weight: 600; display: flex; align-items: center; justify-content: center;
+        }
+        #wallet-balance { font-size: 40px; font-weight: 700; margin-bottom: 5px; }
+        #user-mobile { opacity: 0.8; font-size: 14px; }
+        
+        @keyframes pulse-shake {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            5%, 15% { transform: scale(1.1) rotate(-5deg); }
+            10%, 20% { transform: scale(1.1) rotate(5deg); }
+            25% { transform: scale(1.1) rotate(0deg); }
+        }
+        .wallet-share {
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s, transform 0.2s;
+            animation: pulse-shake 5s infinite ease-in-out; 
+        }
+        .wallet-share:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            animation-play-state: paused; 
+        }
+        .wallet-share .share-icon {
+            font-size: 22px;
+        }
+        .wallet-share .share-text {
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .dashboard-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .action-card {
+            background-color: var(--bg-light); padding: 20px; border-radius: 12px; text-align: center; cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s; border: 1px solid var(--border-color-dark); position: relative; z-index: 2; aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-decoration: none; color: inherit;
+        }
+        .action-card:hover { transform: translateY(-5px); background-color: var(--border-color-dark); }
+        .action-card .icon { font-size: 28px; margin-bottom: 10px; }
+        .action-card.claim .icon { color: var(--accent-green); }
+        .action-card.cashback .icon { color: var(--accent-blue); }
+        .action-card.coupons .icon { color: var(--brand-red); }
+        .action-card.pending .icon { color: var(--accent-yellow); }
+        .action-card.profile .icon { color: #8e44ad; }
+        .action-card.whatsapp .icon { color: var(--whatsapp-green); }
+        .action-card .card-text {
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        /* --- NEW: Gift Icon Animation --- */
+        @keyframes gift-pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            5%, 15% { transform: scale(1.1) rotate(-3deg); }
+            10%, 20% { transform: scale(1.1) rotate(3deg); }
+            25% { transform: scale(1.1) rotate(0deg); }
+        }
+        .action-card.cashback .icon {
+            animation: gift-pulse 4s infinite ease-in-out;
+            animation-delay: 1s;
+        }
+
+        /* --- UPDATED: Animated Border with Conic Gradient --- */
+        @keyframes rotate { 100% { transform: rotate(1turn); } }
+        .action-card.animated-border {
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            border: none;
+        }
+        .action-card.animated-border::before {
+            content: '';
+            position: absolute;
+            z-index: -2;
+            left: -50%;
+            top: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0%, transparent 70%,
+                var(--accent-yellow),
+                white,
+                var(--accent-yellow),
+                transparent 100%
+            );
+            animation: rotate 4s linear infinite;
+        }
+        body[data-theme="light"] .action-card.animated-border::before {
+             background: conic-gradient(
+                from 0deg,
+                transparent 0%, transparent 70%,
+                var(--accent-yellow),
+                #555,
+                var(--accent-yellow),
+                transparent 100%
+            );
+        }
+         .action-card.animated-border::after {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            left: 2px;
+            top: 2px;
+            width: calc(100% - 4px);
+            height: calc(100% - 4px);
+            background: var(--bg-light);
+            border-radius: 10px;
+        }
+        body[data-theme="light"] .action-card.animated-border::after {
+            background: var(--bg-light-theme-card);
+        }
+
+        /* --- NEW: Card Click Animation --- */
+        .action-card.clicked-effect {
+            animation: click-border-pulse 0.5s ease-out;
+        }
+        @keyframes click-border-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+            50% { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3); }
+            100% { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0); }
+        }
+        body[data-theme="light"] .action-card.clicked-effect {
+            animation-name: click-border-pulse-light;
+        }
+        @keyframes click-border-pulse-light {
+             0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+            50% { box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15); }
+            100% { box-shadow: 0 0 0 8px rgba(0, 0, 0, 0); }
+        }
+
+        .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: var(--text-secondary-dark); }
+        .history-list { display: flex; flex-direction: column; gap: 12px; }
+        .history-item {
+            display: flex; align-items: center; justify-content: space-between; background-color: var(--bg-light);
+            padding: 15px; border-radius: 10px; border-left: 4px solid var(--accent-blue);
+        }
+        .history-item.debit { border-left-color: var(--brand-red); }
+        .history-item.credit { border-left-color: var(--accent-green); }
+        .history-details { display: flex; align-items: center; gap: 15px; }
+        .history-icon {
+            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;
+        }
+        .history-icon.debit { background-color: rgba(229, 9, 20, 0.1); color: var(--brand-red); }
+        .history-icon.credit { background-color: rgba(46, 204, 113, 0.1); color: var(--accent-green); }
+        .history-info .title { font-weight: 600; font-size: 15px; }
+        .history-info .date { font-size: 13px; color: var(--text-secondary-dark); }
+        .history-amount { text-align: right; }
+        .history-amount .amount { font-weight: 600; font-size: 16px; }
+        .history-amount .amount.debit { color: #ff6b6b; }
+        .history-amount .amount.credit { color: #2ecc71; }
+        .history-amount .status {
+            font-size: 12px; font-weight: 500; padding: 3px 8px; border-radius: 12px; text-transform: capitalize;
+        }
+        .status-pending { background-color: rgba(241, 196, 15, 0.2); color: var(--accent-yellow); }
+        .status-approved { background-color: rgba(46, 204, 113, 0.2); color: var(--accent-green); }
+        .status-rejected { background-color: rgba(229, 9, 20, 0.2); color: var(--brand-red); }
+        .coupon-code { font-family: 'Courier New', Courier, monospace; font-weight: bold; background-color: #333; padding: 2px 5px; border-radius: 4px; color: #eee; font-size: 12px; display: inline-block; margin-top: 4px; }
+        .copy-btn {
+            background: none; border: none; color: var(--text-secondary-dark); cursor: pointer;
+            font-size: 12px; padding: 2px 5px; margin-left: 5px;
+        }
+        .empty-history { text-align: center; padding: 40px 20px; background-color: var(--bg-light); border-radius: 12px; color: var(--text-secondary-dark); }
+        
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7);
+            display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px);
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .modal-content {
+            background-color: var(--bg-light); padding: 30px; border-radius: 16px; width: 90%; max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid var(--border-color-dark);
+            animation: slideIn 0.4s cubic-bezier(0.25, 1, 0.5, 1); max-height: 80vh; display: flex; flex-direction: column;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .modal-body { overflow-y: auto; margin-top: 15px; }
+        .modal-content h3 { margin-top: 0; text-align: center; font-size: 20px; margin-bottom: 10px; }
+        .modal-content .modal-description { text-align: center; color: var(--text-secondary-dark); margin-bottom: 25px; font-size: 14px; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-secondary { background: var(--border-color-dark); }
+        .btn-secondary:hover { background: #414b69; transform: none; box-shadow: none; }
+        
+        /* Profile Modal Specifics */
+        .profile-info { text-align: center; margin-bottom: 25px; }
+        .profile-info #profile-modal-icon {
+            width: 80px; height: 80px; border-radius: 50%; background-color: var(--brand-red); color: white;
+            font-size: 40px; font-weight: 600; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;
+        }
+        .profile-info #profile-modal-name { font-size: 22px; font-weight: 600; }
+        .profile-info #profile-modal-mobile { font-size: 16px; color: var(--text-secondary-dark); }
+        #password-change-form { border-top: 1px solid var(--border-color-dark); padding-top: 20px; margin-top: 20px; }
+        
+        /* Toast Notification Style */
+        .toast-notification {
+            position: fixed;
+            bottom: -100px; /* Initially hidden */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent-green);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 500;
+            z-index: 2000;
+            transition: bottom 0.5s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .toast-notification.show {
+            bottom: 30px; /* Slide in */
+        }
+
+        /* Mobile Full Screen Adjustments */
+        @media (max-width: 600px) {
+            body { padding: 0; }
+            .container { max-width: 100%; }
+            .view { border-radius: 0; min-height: 100vh; }
+            .main-headline { margin-top: 40px; }
+            .dashboard-actions { grid-template-columns: 1fr 1fr; } 
+            .action-card p { font-size: 13px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Login View -->
+        <div id="login-view" class="view active">
+            <h1 class="main-headline"><span class="part1">Ram</span><span class="part2">azone</span></h1>
+            <h1>Customer Login</h1>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-mobile">Mobile Number</label>
+                    <input type="tel" id="login-mobile" pattern="[0-9]{10}" required placeholder="10-digit mobile number">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="number" id="login-password" required placeholder="••••••••">
+                </div>
+                <button type="submit">Login</button>
+                <p id="login-error-msg" class="error-message"></p>
+            </form>
+            <p class="form-link">Naye user? <a href="#" id="show-register-link">Yahan register karein</a></p>
+        </div>
+
+        <!-- Registration View -->
+        <div id="registration-view" class="view">
+             <h1 class="main-headline"><span class="part1">Ram</span><span class="part2">azone</span></h1>
+             <h1>Register New Account</h1>
+            <form id="register-form">
+                <div class="form-group"><label for="reg-name">Poora Naam (Full Name)</label><input type="text" id="reg-name" required></div>
+                <div class="form-group"><label for="reg-mobile">Mobile Number (10 अंक)</label><input type="tel" id="reg-mobile" pattern="[0-9]{10}" required></div>
+                <div class="form-group"><label for="reg-password">Password Banayein</label><input type="password" id="reg-password" required placeholder="Kam se kam 6 akshar"></div>
+                <button type="submit">Register Karein</button>
+                <p id="register-error-msg" class="error-message"></p>
+            </form>
+            <p class="form-link">Pehle se account hai? <a href="#" id="show-login-link">Yahan login karein</a></p>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view">
+            <div class="header">
+                <h1 id="user-name">Welcome!</h1>
+                <div class="header-actions">
+                    <div id="refresh-btn" class="header-icon" title="Refresh Data">🔄</div>
+                    <div id="theme-switcher" class="header-icon" title="Toggle Theme">☀️</div>
+                    <button id="logout-btn">Logout</button>
+                </div>
+            </div>
+            
+            <div class="wallet-card">
+                <div class="wallet-header">
+                    <div>
+                        <p>Wallet Balance</p>
+                        <small id="lifetime-earning">Lifetime Earning: <span class="highlight-amount">₹0.00</span></small>
+                    </div>
+                    <div id="profile-icon"></div>
+                </div>
+                <p id="wallet-balance">₹ 0.00</p>
+                <small id="user-mobile"></small>
+                <div id="wallet-share-btn" class="wallet-share" title="Share App">
+                    <span class="share-icon">🔗</span>
+                    <span class="share-text">Share</span>
+                </div>
+            </div>
+
+            <div class="dashboard-actions">
+                <div id="open-cashback-modal" class="action-card cashback animated-border">
+                    <div class="icon">🎁</div>
+                    <div class="card-text">
+                        <strong>Cashback</strong>
+                        <strong>Request</strong>
+                    </div>
+                </div>
+                <div id="open-claim-modal" class="action-card claim">
+                     <div class="icon">💸</div>
+                    <p>Claim From Wallet</p>
+                </div>
+                <div id="open-coupons-modal" class="action-card coupons">
+                     <div class="icon">🎟️</div>
+                    <p>My Coupons</p>
+                </div>
+                <div id="open-pending-modal" class="action-card pending">
+                     <div class="icon">⏳</div>
+                    <p>Pending Requests</p>
+                </div>
+                 <div id="open-profile-modal" class="action-card profile">
+                     <div class="icon">👤</div>
+                    <p>My Profile</p>
+                </div>
+                 <a href="https://wa.me/917903698180?text=Ramazone%20cashback%0A%0AHelp%20me!" target="_blank" class="action-card whatsapp">
+                    <div class="icon">💬</div>
+                    <p>WhatsApp Support</p>
+                </a>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Haal Hi Ke Transactions</h2>
+                <div id="unified-history-list" class="history-list">
+                    <!-- History items will be injected here by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="password-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Confirm Your Request</h3>
+            <p class="modal-description">Kripya aage badhne ke liye apna password daalein.</p>
+            <div class="form-group">
+                <label for="modal-password">Password</label>
+                <input type="password" id="modal-password" required>
+            </div>
+            <p id="modal-error-msg" class="error-message"></p>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="btn-secondary">Cancel</button>
+                <button id="modal-confirm-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="claim-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Wallet Se Claim Karein</h3>
+            <p class="modal-description">Aapke wallet se amount redeem kiya jayega.</p>
+            <form id="claim-request-form">
+                <div class="form-group">
+                    <label for="claim-amount">Kitna Amount Claim Karna Hai? (kam se kam ₹10)</label>
+                    <input type="number" id="claim-amount" step="0.01" min="10" required>
+                </div>
+                <p id="claim-error-msg" class="error-message"></p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" data-close-modal>Cancel</button>
+                    <button type="submit" id="claim-submit-btn" disabled>Request Bhejein</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="cashback-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Cashback Request</h3>
+             <p class="modal-description">Product details bharein. 2% cashback request kiya jayega.</p>
+            <form id="cashback-request-form">
+                <div class="form-group"><label for="product-name">Product ka Naam</label><input type="text" id="product-name" required></div>
+                <div class="form-group"><label for="product-price">Product ka Price (₹)</label><input type="number" id="product-price" min="10" required></div>
+                <p id="cashback-error-msg" class="error-message"></p>
+                 <div class="modal-actions">
+                    <button type="button" class="btn-secondary" data-close-modal>Cancel</button>
+                    <button type="submit" id="cashback-submit-btn" disabled>Request Submit Karein</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="coupons-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Aapke Coupons</h3>
+            <div class="modal-body" id="coupons-list">
+                <!-- Coupon items will be injected here -->
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" data-close-modal>Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pending-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Pending Requests</h3>
+             <div class="modal-body" id="pending-list">
+                <!-- Pending items will be injected here -->
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" data-close-modal>Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="profile-modal" class="modal-overlay">
+        <div class="modal-content">
+             <div class="profile-info">
+                <div id="profile-modal-icon"></div>
+                <h3 id="profile-modal-name"></h3>
+                <p id="profile-modal-mobile"></p>
+            </div>
+            <form id="password-change-form">
+                <div class="form-group">
+                    <label for="current-password">Purana Password</label>
+                    <input type="password" id="current-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Naya Password</label>
+                    <input type="password" id="new-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Naya Password Confirm Karein</label>
+                    <input type="password" id="confirm-password" required>
+                </div>
+                <p id="password-change-error-msg" class="error-message"></p>
+                <button type="submit" id="password-change-btn">Password Badlein</button>
+            </form>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" data-close-modal>Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification Element -->
+    <div id="toast-notification" class="toast-notification"></div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref, get, set, push, onValue, runTransaction, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCmgMr4cj7ec1B09eu3xpRhCwsVCeQR9v0",
+            authDomain: "tipsplit-e3wes.firebaseapp.com",
+            databaseURL: "https://tipsplit-e3wes-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tipsplit-e3wes",
+            storageBucket: "tipsplit-e3wes.firebasestorage.app",
+            messagingSenderId: "984733883633",
+            appId: "1:984733883633:web:adc1e1d22b629a6b631d50"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // --- DOM Elements ---
+        const views = document.querySelectorAll('.view');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const logoutBtn = document.getElementById('logout-btn');
+        const loginErrorMsg = document.getElementById('login-error-msg');
+        const registerErrorMsg = document.getElementById('register-error-msg');
+        const themeSwitcher = document.getElementById('theme-switcher');
+        const refreshBtn = document.getElementById('refresh-btn');
+        
+        // Modals & Forms
+        const passwordModal = document.getElementById('password-modal');
+        const claimModal = document.getElementById('claim-modal');
+        const cashbackModal = document.getElementById('cashback-modal');
+        const couponsModal = document.getElementById('coupons-modal');
+        const pendingModal = document.getElementById('pending-modal');
+        const profileModal = document.getElementById('profile-modal');
+
+        const claimRequestForm = document.getElementById('claim-request-form');
+        const cashbackRequestForm = document.getElementById('cashback-request-form');
+        const passwordChangeForm = document.getElementById('password-change-form');
+
+        const claimErrorMsg = document.getElementById('claim-error-msg');
+        const cashbackErrorMsg = document.getElementById('cashback-error-msg');
+        const modalErrorMsg = document.getElementById('modal-error-msg');
+        const passwordChangeErrorMsg = document.getElementById('password-change-error-msg');
+
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+        const modalPasswordInput = document.getElementById('modal-password');
+        const claimSubmitBtn = document.getElementById('claim-submit-btn');
+        const cashbackSubmitBtn = document.getElementById('cashback-submit-btn');
+
+        let currentUserData = null;
+        let activeListeners = [];
+        let tempClaimAmount = 0;
+        
+        let claimsDataSnapshot = null;
+        let cashbackDataSnapshot = null;
+
+        // --- Helper Functions ---
+        function showErrorMessage(element, message) {
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+
+        function hideErrorMessage(element) {
+            element.textContent = '';
+            element.style.display = 'none';
+        }
+
+        function toggleView(viewId) {
+            views.forEach(view => view.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function openModal(modalElement) { modalElement.classList.add('active'); }
+        function closeModal(modalElement) { modalElement.classList.remove('active'); }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-notification');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000); 
+        }
+
+        // --- Theme Management ---
+        function applyTheme(theme) {
+            document.body.dataset.theme = theme;
+            themeSwitcher.textContent = theme === 'light' ? '🌙' : '☀️';
+            localStorage.setItem('theme', theme);
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+        }
+
+        themeSwitcher.addEventListener('click', () => {
+            const newTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        });
+
+        // --- Authentication Logic ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                toggleView('dashboard-view');
+                attachRealtimeListeners(user);
+            } else {
+                toggleView('login-view');
+                detachAllListeners();
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            hideErrorMessage(loginErrorMsg);
+            const mobile = document.getElementById('login-mobile').value;
+            const password = document.getElementById('login-password').value;
+            const email = `${mobile}@ramazone.com`;
+            signInWithEmailAndPassword(auth, email, password)
+                .catch(error => showErrorMessage(loginErrorMsg, "Galat mobile number ya password."));
+        });
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideErrorMessage(registerErrorMsg);
+            const name = document.getElementById('reg-name').value.trim();
+            const mobile = document.getElementById('reg-mobile').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            const email = `${mobile}@ramazone.com`;
+
+            if (!name || !/^\d{10}$/.test(mobile) || password.length < 6) {
+                showErrorMessage(registerErrorMsg, "Kripya sabhi details sahi se bharein. Password kam se kam 6 akshar ka hona chahiye.");
+                return;
+            }
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await updateProfile(user, { displayName: name });
+                
+                const userRef = ref(database, 'users/' + user.uid);
+                const userData = { 
+                    name: name, 
+                    mobile: mobile, 
+                    wallet: 0,
+                    lifetimeEarning: 0 
+                };
+                await set(userRef, userData);
+
+                const mobileMapRef = ref(database, 'mobile_to_uid/' + mobile);
+                await set(mobileMapRef, user.uid);
+
+                alert("Registration safal hua! Ab aap login kar sakte hain.");
+                toggleView('login-view');
+                registerForm.reset();
+            } catch (error) {
+                console.error("Registration Error:", error);
+                if (error.code === 'auth/email-already-in-use') {
+                    showErrorMessage(registerErrorMsg, "Is mobile number se account pehle se hai.");
+                } else {
+                    showErrorMessage(registerErrorMsg, "Registration fail ho gaya. Kripya dobara try karein.");
+                }
+            }
+        });
+        
+        logoutBtn.addEventListener('click', () => signOut(auth));
+
+        // --- Real-time Data & Rendering ---
+
+        function renderAllViews() {
+            if (claimsDataSnapshot && cashbackDataSnapshot) {
+                renderUnifiedHistory(claimsDataSnapshot, cashbackDataSnapshot);
+                renderCouponsModal(claimsDataSnapshot);
+                renderPendingModal(claimsDataSnapshot, cashbackDataSnapshot);
+            }
+        }
+
+        function attachRealtimeListeners(user) {
+            detachAllListeners(); 
+
+            const userDbRef = ref(database, 'users/' + user.uid);
+            const userUnsubscribe = onValue(userDbRef, (snapshot) => {
+                if(snapshot.exists()){
+                    currentUserData = snapshot.val();
+                    updateDashboardUI(currentUserData, user);
+                }
+            });
+            activeListeners.push(userUnsubscribe);
+
+            const claimsQuery = query(ref(database, 'claim_requests'), orderByChild('userId'), equalTo(user.uid));
+            const claimsUnsubscribe = onValue(claimsQuery, (snapshot) => {
+                claimsDataSnapshot = snapshot;
+                renderAllViews();
+            });
+            activeListeners.push(claimsUnsubscribe);
+
+            const cashbackQuery = query(ref(database, 'cashback_requests'), orderByChild('userId'), equalTo(user.uid));
+            const cashbackUnsubscribe = onValue(cashbackQuery, (snapshot) => {
+                cashbackDataSnapshot = snapshot;
+                
+                const userLifetimeEarningRef = ref(database, `users/${user.uid}/lifetimeEarning`);
+                snapshot.forEach(child => {
+                    const req = child.val();
+                    const reqKey = child.key;
+
+                    if (req.status === 'approved' && !req.countedForLifetime) {
+                        const cashbackAmount = parseFloat(req.cashbackAmount || 0);
+
+                        if (cashbackAmount > 0) {
+                            runTransaction(userLifetimeEarningRef, (currentValue) => {
+                                return (currentValue || 0) + cashbackAmount;
+                            }).then(() => {
+                                const requestCountedRef = ref(database, `cashback_requests/${reqKey}/countedForLifetime`);
+                                set(requestCountedRef, true);
+                            }).catch((error) => {
+                                console.error("Could not update lifetime earning for transaction. Will retry on next data load.", error);
+                            });
+                        } else {
+                            const requestCountedRef = ref(database, `cashback_requests/${reqKey}/countedForLifetime`);
+                            set(requestCountedRef, true);
+                        }
+                    }
+                });
+
+                renderAllViews();
+            });
+            activeListeners.push(cashbackUnsubscribe);
+        }
+
+        function detachAllListeners() {
+            activeListeners.forEach(unsubscribe => unsubscribe());
+            activeListeners = [];
+            currentUserData = null;
+            claimsDataSnapshot = null;
+            cashbackDataSnapshot = null;
+            claimSubmitBtn.disabled = true;
+            cashbackSubmitBtn.disabled = true;
+        }
+        
+        function refreshData() {
+            if (!auth.currentUser) return;
+            refreshBtn.classList.add('refreshing');
+            attachRealtimeListeners(auth.currentUser);
+            setTimeout(() => {
+                refreshBtn.classList.remove('refreshing');
+            }, 1000);
+        }
+
+        // --- UI Rendering ---
+        function updateDashboardUI(dbData, authUser) {
+            if (!dbData || !authUser) return;
+            const walletBalance = parseFloat(dbData.wallet || 0);
+            const lifetimeEarning = parseFloat(dbData.lifetimeEarning || 0);
+
+            document.getElementById('user-name').textContent = `Welcome, ${authUser.displayName}!`;
+            document.getElementById('user-mobile').textContent = `Mobile: ${dbData.mobile}`;
+            document.getElementById('wallet-balance').textContent = `₹ ${walletBalance.toFixed(2)}`;
+            document.getElementById('lifetime-earning').innerHTML = `Lifetime Earning: <span class="highlight-amount">₹${lifetimeEarning.toFixed(2)}</span>`;
+
+            const openClaimModalBtn = document.getElementById('open-claim-modal');
+            openClaimModalBtn.style.opacity = walletBalance >= 10 ? '1' : '0.5';
+            openClaimModalBtn.style.pointerEvents = walletBalance >= 10 ? 'auto' : 'none';
+            if (authUser.displayName) {
+                const initial = authUser.displayName.charAt(0).toUpperCase();
+                document.getElementById('profile-icon').textContent = initial;
+                document.getElementById('profile-modal-icon').textContent = initial;
+            }
+            document.getElementById('profile-modal-name').textContent = authUser.displayName;
+            document.getElementById('profile-modal-mobile').textContent = dbData.mobile;
+            claimSubmitBtn.disabled = false;
+            cashbackSubmitBtn.disabled = false;
+        }
+
+        function renderUnifiedHistory(claimSnapshot, cashbackSnapshot) {
+            const historyList = document.getElementById('unified-history-list');
+            historyList.innerHTML = '';
+            let combinedHistory = [];
+            claimSnapshot.forEach(child => {
+                const req = child.val();
+                combinedHistory.push({ type: 'debit', date: new Date(req.requestDate), title: 'Wallet Claim', amount: req.claimAmount, status: req.status, couponCode: req.couponCode });
+            });
+            cashbackSnapshot.forEach(child => {
+                const req = child.val();
+                combinedHistory.push({ type: req.status === 'approved' ? 'credit' : 'info', date: new Date(req.requestDate), title: `Cashback: ${req.productName}`, amount: req.cashbackAmount, status: req.status });
+            });
+            if (combinedHistory.length === 0) {
+                historyList.innerHTML = '<p class="empty-history">Aapke paas abhi koi transactions nahi hain.</p>';
+                return;
+            }
+            combinedHistory.sort((a, b) => b.date - a.date);
+            combinedHistory.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `history-item ${item.type}`;
+                const iconClass = item.type === 'debit' ? 'debit' : 'credit';
+                const iconSymbol = item.type === 'debit' ? '↑' : '↓';
+                const amountClass = item.type === 'debit' ? 'debit' : 'credit';
+                const amountPrefix = item.type === 'debit' ? '-' : '+';
+                let couponHTML = '';
+                if (item.type === 'debit' && item.status === 'approved' && item.couponCode) {
+                    couponHTML = `<span class="coupon-code">${item.couponCode}</span>`;
+                } else if (item.type === 'debit' && item.status === 'rejected') {
+                    couponHTML = `<span class="coupon-code">Refunded</span>`;
+                }
+                itemDiv.innerHTML = `
+                    <div class="history-details">
+                        <div class="history-icon ${iconClass}">${iconSymbol}</div>
+                        <div class="history-info"><div class="title">${item.title}</div><div class="date">${item.date.toLocaleDateString()}</div></div>
+                    </div>
+                    <div class="history-amount">
+                        <div class="amount ${amountClass}">${amountPrefix} ₹${item.amount.toFixed(2)}</div>
+                        <span class="status status-${item.status}">${item.status}</span>
+                        ${couponHTML}
+                    </div>`;
+                historyList.appendChild(itemDiv);
+            });
+        }
+        
+        function renderCouponsModal(claimSnapshot) {
+            const list = document.getElementById('coupons-list');
+            list.innerHTML = '';
+            const approvedClaims = [];
+            claimSnapshot.forEach(child => {
+                const req = child.val();
+                if(req.status === 'approved' && req.couponCode) approvedClaims.push(req);
+            });
+            if (approvedClaims.length === 0) {
+                list.innerHTML = '<p class="empty-history">Aapke paas abhi koi coupons nahi hain.</p>';
+                return;
+            }
+            approvedClaims.sort((a,b) => new Date(b.requestDate) - new Date(a.requestDate));
+            approvedClaims.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'history-item debit';
+                const couponText = item.couponCode;
+                itemDiv.innerHTML = `
+                    <div class="history-details">
+                        <div class="history-icon debit">🎟️</div>
+                        <div class="history-info">
+                            <div class="title">₹${item.claimAmount.toFixed(2)} Coupon</div>
+                            <div class="date">${new Date(item.requestDate).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                    <div class="history-amount">
+                         <span class="coupon-code" style="font-size: 14px;">${couponText}</span>
+                         <button class="copy-btn" data-coupon="${couponText}">📋 Copy</button>
+                    </div>`;
+                list.appendChild(itemDiv);
+            });
+        }
+
+        function renderPendingModal(claimSnapshot, cashbackSnapshot) {
+            const list = document.getElementById('pending-list');
+            list.innerHTML = '';
+            let pendingItems = [];
+            claimSnapshot.forEach(child => {
+                const req = child.val();
+                if(req.status === 'pending') pendingItems.push({type: 'Claim', date: new Date(req.requestDate), title: 'Wallet Claim', amount: req.claimAmount });
+            });
+            cashbackSnapshot.forEach(child => {
+                const req = child.val();
+                if(req.status === 'pending') pendingItems.push({type: 'Cashback', date: new Date(req.requestDate), title: `Cashback: ${req.productName}`, amount: req.cashbackAmount });
+            });
+            if (pendingItems.length === 0) {
+                list.innerHTML = '<p class="empty-history">Aapke paas abhi koi pending requests nahi hain.</p>';
+                return;
+            }
+            pendingItems.sort((a,b) => b.date - a.date);
+            pendingItems.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'history-item';
+                itemDiv.innerHTML = `
+                    <div class="history-details">
+                        <div class="history-icon"><span style="font-size: 20px;">⏳</span></div>
+                        <div class="history-info"><div class="title">${item.title}</div><div class="date">${item.date.toLocaleDateString()}</div></div>
+                    </div>
+                    <div class="history-amount"><div class="amount">₹${item.amount.toFixed(2)}</div></div>`;
+                list.appendChild(itemDiv);
+            });
+        }
+
+        // --- Action Handlers ---
+        async function handleClaimRequest(e) {
+            e.preventDefault();
+            hideErrorMessage(claimErrorMsg);
+            if(!auth.currentUser || !currentUserData){ showErrorMessage(claimErrorMsg,"Data load ho raha hai..."); return; }
+            const claimAmount=parseFloat(document.getElementById("claim-amount").value);
+            const currentWalletBalance=parseFloat(currentUserData.wallet||0);
+            if(isNaN(claimAmount)||claimAmount<10){showErrorMessage(claimErrorMsg,"Sahi amount daalein (kam se kam ₹10).");return}
+            if(claimAmount>currentWalletBalance){showErrorMessage(claimErrorMsg,"Aap wallet balance se zyada claim nahi kar sakte.");return}
+            tempClaimAmount = claimAmount;
+            closeModal(claimModal);
+            openModal(passwordModal);
+            modalPasswordInput.focus();
+        }
+        
+        async function processClaimConfirmation() {
+            hideErrorMessage(modalErrorMsg);
+            modalConfirmBtn.disabled = true;
+            modalConfirmBtn.textContent = "Verifying...";
+            if (!auth.currentUser || !currentUserData) {
+                showErrorMessage(modalErrorMsg, "Session expire. Dobara login karein.");
+                modalConfirmBtn.disabled = false; modalConfirmBtn.textContent = "Confirm"; return;
+            }
+            const password = modalPasswordInput.value;
+            if (!password) {
+                showErrorMessage(modalErrorMsg, "Kripya password daalein.");
+                modalConfirmBtn.disabled = false; modalConfirmBtn.textContent = "Confirm"; return;
+            }
+            const email = `${currentUserData.mobile}@ramazone.com`;
+            const credential = EmailAuthProvider.credential(email, password);
+            try {
+                await reauthenticateWithCredential(auth.currentUser, credential);
+            } catch (error) {
+                showErrorMessage(modalErrorMsg, "Galat password. Dobara try karein.");
+                modalConfirmBtn.disabled = false; modalConfirmBtn.textContent = "Confirm"; return;
+            }
+            modalConfirmBtn.textContent = "Processing...";
+            const userRef = ref(database, 'users/' + auth.currentUser.uid);
+            try {
+                const transactionResult = await runTransaction(userRef, data => {
+                    if (data && parseFloat(data.wallet || 0) >= tempClaimAmount) {
+                        data.wallet = parseFloat(data.wallet || 0) - tempClaimAmount;
+                        return data;
+                    }
+                    return; 
+                });
+                if (transactionResult.committed) {
+                    const newClaimRef = push(ref(database, "claim_requests"));
+                    await set(newClaimRef, { claimId: newClaimRef.key, userMobile: currentUserData.mobile, userName: auth.currentUser.displayName, claimAmount: tempClaimAmount, status: "pending", requestDate: (new Date).toISOString(), userId: auth.currentUser.uid });
+                    showToast("Request safaltapoorvak bhej diya gaya hai!");
+                    closeModal(passwordModal);
+                    claimRequestForm.reset();
+                } else {
+                    showErrorMessage(modalErrorMsg, "Transaction fail. Balance check karein.");
+                }
+            } catch (error) {
+                showErrorMessage(modalErrorMsg, "Ek error aayi: " + error.message);
+            } finally {
+                modalConfirmBtn.disabled = false; modalConfirmBtn.textContent = "Confirm"; modalPasswordInput.value = '';
+            }
+        }
+        
+        async function handleCashbackRequest(e) {
+            e.preventDefault();
+            hideErrorMessage(cashbackErrorMsg);
+            cashbackSubmitBtn.disabled = true;
+            if(!auth.currentUser || !currentUserData){ showErrorMessage(cashbackErrorMsg,"Data load ho raha hai..."); cashbackSubmitBtn.disabled = false; return; }
+            const productName=document.getElementById("product-name").value.trim();
+            const productPrice=parseFloat(document.getElementById("product-price").value);
+            if(!productName||isNaN(productPrice)||productPrice<10){ showErrorMessage(cashbackErrorMsg,"Sahi product naam aur kam se kam ₹10 ka price daalein."); cashbackSubmitBtn.disabled = false; return; }
+            const cashbackAmount=productPrice*.02;
+            const newRequestRef=push(ref(database,"cashback_requests"));
+            try{
+                await set(newRequestRef,{ requestId:newRequestRef.key, userMobile:currentUserData.mobile, userName:auth.currentUser.displayName, productName:productName, productPrice:productPrice, cashbackAmount:cashbackAmount, status:"pending", requestDate:(new Date).toISOString(), userId: auth.currentUser.uid });
+                showToast("Cashback request submit ho gaya!");
+                cashbackRequestForm.reset();
+                closeModal(cashbackModal);
+            } catch(err){
+                showErrorMessage(cashbackErrorMsg,"Request submit karne mein error aayi: "+err.message);
+            } finally {
+                 cashbackSubmitBtn.disabled = false;
+            }
+        }
+
+        async function handlePasswordChange(e) {
+            e.preventDefault();
+            hideErrorMessage(passwordChangeErrorMsg);
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                showErrorMessage(passwordChangeErrorMsg, "Naya password match nahi ho raha.");
+                return;
+            }
+            if (newPassword.length < 6) {
+                showErrorMessage(passwordChangeErrorMsg, "Naya password kam se kam 6 akshar ka hona chahiye.");
+                return;
+            }
+
+            const user = auth.currentUser;
+            const email = `${currentUserData.mobile}@ramazone.com`;
+            const credential = EmailAuthProvider.credential(email, currentPassword);
+
+            try {
+                await reauthenticateWithCredential(user, credential);
+                await updatePassword(user, newPassword);
+                showToast("Password safaltapoorvak badal gaya hai!");
+                passwordChangeForm.reset();
+                closeModal(profileModal);
+            } catch (error) {
+                console.error("Password Change Error:", error);
+                showErrorMessage(passwordChangeErrorMsg, "Purana password galat hai ya koi aur error aayi.");
+            }
+        }
+
+        // --- Initial Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+
+            // NEW: Add click animation listener to all action cards
+            document.querySelectorAll('.action-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Prevent animation on the link card if you want instant navigation
+                    if (card.tagName.toLowerCase() === 'a') {
+                        return;
+                    }
+                    card.classList.add('clicked-effect');
+                    card.addEventListener('animationend', () => {
+                        card.classList.remove('clicked-effect');
+                    }, { once: true });
+                });
+            });
+        });
+
+        document.getElementById('show-register-link').addEventListener('click', (e) => { e.preventDefault(); toggleView('registration-view'); });
+        document.getElementById('show-login-link').addEventListener('click', (e) => { e.preventDefault(); toggleView('login-view'); });
+        
+        refreshBtn.addEventListener('click', refreshData);
+
+        // Modal Triggers
+        document.getElementById('open-claim-modal').addEventListener('click', () => openModal(claimModal));
+        document.getElementById('open-cashback-modal').addEventListener('click', () => openModal(cashbackModal));
+        document.getElementById('open-coupons-modal').addEventListener('click', () => openModal(couponsModal));
+        document.getElementById('open-pending-modal').addEventListener('click', () => openModal(pendingModal));
+        document.getElementById('open-profile-modal').addEventListener('click', () => openModal(profileModal));
+        
+        // Modal Close Triggers
+        document.querySelectorAll('[data-close-modal]').forEach(btn => {
+            btn.addEventListener('click', () => closeModal(btn.closest('.modal-overlay')));
+        });
+        modalCancelBtn.addEventListener('click', () => closeModal(passwordModal));
+        
+        // Form Submissions
+        claimRequestForm.addEventListener('submit', handleClaimRequest);
+        cashbackRequestForm.addEventListener('submit', handleCashbackRequest);
+        passwordChangeForm.addEventListener('submit', handlePasswordChange);
+        modalConfirmBtn.addEventListener('click', processClaimConfirmation);
+
+        // Event delegation for copy buttons
+        document.getElementById('coupons-list').addEventListener('click', (e) => {
+            if (e.target && e.target.classList.contains('copy-btn')) {
+                const coupon = e.target.dataset.coupon;
+                const button = e.target;
+                navigator.clipboard.writeText(coupon).then(() => {
+                    button.textContent = '✅ Copied!';
+                    setTimeout(() => { button.textContent = '📋 Copy'; }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showToast('Coupon copy karne mein error aayi.');
+                });
+            }
+        });
+        
+        document.getElementById('wallet-share-btn').addEventListener('click', async () => {
+            const userName = auth.currentUser?.displayName || 'Ek Dost';
+            const lifetimeEarningEl = document.querySelector('#lifetime-earning .highlight-amount');
+            const lifetimeEarningText = lifetimeEarningEl ? lifetimeEarningEl.textContent : '₹0.00';
+            const appLink = window.location.href;
+
+            const shareMessage = `🎉 *Wow! Ek Zabardast Offer!* 🎉\n\nMaine, *${userName}* ne, Ramazone Cashback app se ab tak *${lifetimeEarningText}* ki bachat ki hai! 🤑\n\nAap bhi is app ko use karein aur har khareed par dher saare paise bachayein. Miss mat karna! 👇\n\n${appLink}\n\n✨ *Happy Shopping & Happy Saving!* ✨`;
+
+            const shareData = {
+                title: 'Ramazone Cashback Offer!',
+                text: shareMessage,
+                url: appLink
+            };
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    navigator.clipboard.writeText(shareMessage).then(() => {
+                        showToast('Share message copied to clipboard!');
+                    }).catch(err => {
+                        console.error('Fallback copy failed: ', err);
+                        showToast('Message copy nahi ho saka.');
+                    });
+                }
+            } catch (err) {
+                console.error('Share failed:', err);
+            }
+        });
+        
+    </script>
+</body>
+</html>
+
