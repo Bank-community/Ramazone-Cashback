@@ -79,7 +79,6 @@
                     </div>
                     <div class="mt-auto pt-6">
                         <a id="whatsapp-order-link" href="#" target="_blank" class="whatsapp-btn w-full flex items-center justify-center text-white font-bold py-4 px-6 rounded-xl text-lg shadow-lg">
-                            <!-- UPDATED: New WhatsApp Icon -->
                             <img src="https://www.svgrepo.com/show/452133/whatsapp.svg" class="w-7 h-7 mr-3" alt="WhatsApp">
                             Order on WhatsApp
                         </a>
@@ -114,6 +113,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
+        // --- Firebase Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyAgzs3GqaafEHQSnEyZqrjQT0r_6jXMaGQ",
             authDomain: "re-store-7f2b3.firebaseapp.com",
@@ -121,22 +121,26 @@
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const sellerPhoneNumber = '917903698180';
+        const sellerPhoneNumber = '917903698180'; // Your WhatsApp number
 
+        // --- Global Variables ---
         let modalImages = [];
         let currentModalImageIndex = 0;
 
+        // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const productId = params.get('id');
 
             if (productId === null) {
-                document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">Product ID not found.</p>';
+                // Handle case where no product ID is in the URL
+                document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">Product ID not found in URL.</p>';
                 document.getElementById('loading-indicator').style.display = 'none';
                 document.getElementById('product-content').style.display = 'block';
                 return;
             }
 
+            // Fetch product data from Firebase
             const productRef = database.ref(`ramazone/homepage/festiveCollection/products/${productId}`);
             productRef.get().then((snapshot) => {
                 if (snapshot.exists()) {
@@ -146,17 +150,31 @@
                     document.getElementById('loading-indicator').style.display = 'none';
                     document.getElementById('product-content').style.display = 'block';
                 } else {
-                    document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">Product not found.</p>';
+                    // Handle case where product ID does not exist in the database
+                    document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">Sorry, this product could not be found.</p>';
                     document.getElementById('loading-indicator').style.display = 'none';
                     document.getElementById('product-content').style.display = 'block';
                 }
+            }).catch(error => {
+                console.error("Firebase fetch error:", error);
+                document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">Error loading product data.</p>';
+                document.getElementById('loading-indicator').style.display = 'none';
+                document.getElementById('product-content').style.display = 'block';
             });
 
+            // Initialize the image modal functionality
             setupImageModal();
         });
 
+        // --- Core Functions ---
+
+        /**
+         * Populates the page with product data.
+         * @param {object} data - The product data object from Firebase.
+         * @param {string} id - The product's unique ID.
+         */
         function loadProduct(data, id) {
-            // Set Meta Tags for Social Sharing
+            // Set Meta Tags for rich social media sharing (e.g., on WhatsApp, Facebook)
             const firstImage = (data.images && data.images.length > 0) ? data.images[0] : data.imageUrl;
             const plainDescription = `Check out this amazing product: ${data.name} on Ramazone!`;
 
@@ -166,10 +184,11 @@
             document.querySelector('meta[property="og:image"]').setAttribute('content', firstImage || 'https://i.ibb.co/My6h0gdd/20250706-230221.png');
             document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
 
-            // Load product content
+            // Populate main product content
             document.getElementById('product-title').textContent = data.name || 'Product Name';
             document.getElementById('product-price').textContent = data.price ? `₹${data.price}` : `₹${data.offer || 'N/A'}`;
 
+            // Display discount if applicable
             if (data.originalPrice && data.price) {
                 const discount = Math.round(((data.originalPrice - data.price) / data.originalPrice) * 100);
                 if (discount > 0) {
@@ -179,23 +198,28 @@
                 }
             }
 
+            // Display product description if it exists
             if (data.description) {
                 document.getElementById('description-section').style.display = 'block';
                 document.getElementById('product-description').innerHTML = data.description;
             }
 
+            // Image Gallery Setup
             const mainImage = document.getElementById('main-product-image');
             const gallery = document.getElementById('thumbnail-gallery');
             modalImages = data.images && data.images.length > 0 ? data.images : [data.imageUrl];
             
             if(modalImages[0]) mainImage.src = modalImages[0];
             
-            gallery.innerHTML = '';
+            gallery.innerHTML = ''; // Clear previous thumbnails
             modalImages.forEach((imgSrc, index) => {
                 const img = document.createElement('img');
                 img.src = imgSrc;
+                img.alt = `${data.name} thumbnail ${index + 1}`;
                 img.className = 'thumbnail w-full h-auto object-cover rounded-md';
-                if (index === 0) img.classList.add('active');
+                if (index === 0) img.classList.add('active'); // Highlight the first thumbnail
+                
+                // Add click event to change main image and update active thumbnail
                 img.addEventListener('click', () => {
                     mainImage.src = imgSrc;
                     currentModalImageIndex = index;
@@ -205,12 +229,20 @@
                 gallery.appendChild(img);
             });
             
-            const whatsappMessage = `🛍️ *Ramazone Store Order* 🛍️\n\nHello! I'm interested in this product:\n\n*Product:* ${data.name}\n*Price:* ₹${data.price || data.offer}\n*Product ID:* ${id}\n\nPlease let me know if it's available.`;
+            // --- UPDATED WHATSAPP MESSAGE ---
+            // The product link is now included in the message.
+            const productLink = window.location.href;
+            const whatsappMessage = `🛍️ *Ramazone Store Order* 🛍️\n\nHello! I'm interested in this product:\n\n*Product:* ${data.name}\n*Price:* ₹${data.price || data.offer}\n*Product ID:* ${id}\n*Product Link:* ${productLink}\n\nPlease let me know if it's available.`;
             document.getElementById('whatsapp-order-link').href = `https://wa.me/${sellerPhoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
             
+            // Set up the native share button functionality
             setupShareButton(data);
         }
 
+        /**
+         * Loads related products, excluding the current one.
+         * @param {string} currentId - The ID of the product currently being viewed.
+         */
         function loadRelatedProducts(currentId) {
             const productsRef = database.ref('ramazone/homepage/festiveCollection/products');
             productsRef.get().then(snapshot => {
@@ -220,21 +252,33 @@
                     relatedGrid.innerHTML = ''; 
                     let count = 0;
                     
-                    snapshot.forEach((childSnapshot) => {
-                        if (childSnapshot.key !== currentId && count < 4) {
-                            const prod = childSnapshot.val();
-                            if (prod) {
-                                const cardLink = document.createElement('a');
-                                cardLink.href = `./product-details.html?id=${childSnapshot.key}`;
-                                cardLink.className = 'block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow';
-                                
-                                const imageUrl = (prod.images && prod.images.length > 0) ? prod.images[0] : prod.imageUrl;
-
-                                cardLink.innerHTML = `<img src="${imageUrl || 'https://placehold.co/200x200'}" class="w-full h-40 object-cover"><div class="p-2 text-center"><p class="text-sm font-semibold truncate">${prod.name}</p></div>`;
-                                relatedGrid.appendChild(cardLink);
-                                count++;
-                            }
+                    const productList = [];
+                    snapshot.forEach(childSnapshot => {
+                        if (childSnapshot.key !== currentId) {
+                            productList.push({ id: childSnapshot.key, ...childSnapshot.val() });
                         }
+                    });
+
+                    // Shuffle and take the first 4 products
+                    productList.sort(() => 0.5 - Math.random());
+                    
+                    productList.slice(0, 4).forEach(prod => {
+                        const cardLink = document.createElement('a');
+                        cardLink.href = `./product-details.html?id=${prod.id}`;
+                        cardLink.className = 'block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow';
+                        
+                        const imageUrl = (prod.images && prod.images.length > 0) ? prod.images[0] : prod.imageUrl;
+
+                        cardLink.innerHTML = `
+                            <img src="${imageUrl || 'https://placehold.co/200x200/F9FAFB/111827?text=No+Image'}" 
+                                 onerror="this.onerror=null;this.src='https://placehold.co/200x200/F9FAFB/111827?text=No+Image';"
+                                 class="w-full h-40 object-cover" 
+                                 alt="${prod.name || 'Related Product'}">
+                            <div class="p-2 text-center">
+                                <p class="text-sm font-semibold truncate">${prod.name}</p>
+                            </div>`;
+                        relatedGrid.appendChild(cardLink);
+                        count++;
                     });
 
                     if (count > 0) relatedSection.style.display = 'block';
@@ -242,6 +286,9 @@
             });
         }
         
+        /**
+         * Sets up the functionality for the full-screen image modal viewer.
+         */
         function setupImageModal() {
             const modal = document.getElementById('image-modal');
             const mainImageContainer = document.getElementById('main-image-container');
@@ -250,30 +297,38 @@
             const prevBtn = document.querySelector("#image-modal .prev");
             const nextBtn = document.querySelector("#image-modal .next");
 
+            // Open modal when the main image is clicked
             mainImageContainer.onclick = () => {
                 modal.style.display = "flex";
                 modalImg.src = modalImages[currentModalImageIndex];
             }
+            // Close modal with the 'X' button
             closeBtn.onclick = () => modal.style.display = "none";
             
             const showImage = (index) => {
+                // Loop through images
                 if(index >= modalImages.length) { index = 0; }
                 if(index < 0) { index = modalImages.length - 1; }
                 modalImg.src = modalImages[index];
                 currentModalImageIndex = index;
             };
 
+            // Navigation controls
             prevBtn.onclick = (e) => { e.stopPropagation(); showImage(currentModalImageIndex - 1); };
             nextBtn.onclick = (e) => { e.stopPropagation(); showImage(currentModalImageIndex + 1); };
             
+            // Close modal by clicking on the background
             modal.onclick = (e) => { if (e.target === modal) { modal.style.display = "none"; } }
         }
 
-        // UPDATED: Share Functionality with corrected bold formatting
+        /**
+         * Configures the share button to use the Web Share API or fallback to clipboard.
+         * @param {object} productData - The data of the product to be shared.
+         */
         function setupShareButton(productData) {
             const shareButton = document.getElementById('share-button');
             
-            // Corrected format for WhatsApp bold text (no spaces inside asterisks)
+            // Text format for sharing (bolding with asterisks for WhatsApp)
             const productName = `Product Name:- *${productData.name.toUpperCase().trim()}*`;
             const productPrice = `Price:- *₹${productData.price || productData.offer}*`;
             const closingText = `✨ Discover more amazing deals at Ramazone! ✨`;
@@ -282,6 +337,7 @@
             const shareText = `${productName}\n${productPrice}\n\n${closingText}\n${productLink}`;
 
             shareButton.addEventListener('click', async () => {
+                // Use Web Share API if available (on mobile)
                 if (navigator.share) {
                     try {
                         await navigator.share({ text: shareText });
@@ -289,6 +345,7 @@
                         console.error('Share failed:', err.message);
                     }
                 } else {
+                    // Fallback for desktops: copy link to clipboard
                     try {
                         const textArea = document.createElement('textarea');
                         textArea.value = window.location.href;
@@ -297,20 +354,26 @@
                         textArea.select();
                         document.execCommand('copy');
                         document.body.removeChild(textArea);
-                        showToast();
+                        showToast("Link Copied!");
                     } catch (err) {
                         console.error('Fallback copy failed:', err);
+                        showToast("Failed to copy link.");
                     }
                 }
             });
         }
 
-        function showToast() {
+        /**
+         * Shows a temporary toast notification at the bottom of the screen.
+         * @param {string} message - The message to display in the toast.
+         */
+        function showToast(message) {
             const toast = document.getElementById('toast-notification');
+            toast.textContent = message;
             toast.classList.add('show');
             setTimeout(() => {
                 toast.classList.remove('show');
-            }, 2000);
+            }, 2500);
         }
     </script>
 </body>
