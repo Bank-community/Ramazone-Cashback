@@ -20,6 +20,7 @@
             --text-primary-light: #1c2028;
             --text-secondary-light: #5a647e;
             --border-color-light: #e8eef3;
+            --border-color-light-strong: #ced4da;
             
             --brand-red: #e50914;
             --brand-red-hover: #f40612;
@@ -55,15 +56,17 @@
             background-color: var(--bg-light-theme);
             color: var(--text-primary-light);
         }
-        body[data-theme="light"] .main-headline .part2 { color: var(--text-primary-light); }
         body[data-theme="light"] .view, body[data-theme="light"] .action-card, body[data-theme="light"] .modal-content, body[data-theme="light"] .history-item {
             background-color: var(--bg-light-theme-card);
             border-color: var(--border-color-light);
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
+        body[data-theme="light"] .action-card:not(.animated-border) {
+            border: 1px solid var(--border-color-light-strong);
+        }
         body[data-theme="light"] input {
             background-color: var(--bg-light-theme);
-            border-color: var(--border-color-light);
+            border-color: var(--border-color-light-strong);
             color: var(--text-primary-light);
         }
         body[data-theme="light"] label, body[data-theme="light"] .form-link, body[data-theme="light"] .section-title, body[data-theme="light"] .modal-description, body[data-theme="light"] .history-info .date {
@@ -79,10 +82,21 @@
 
         .container { width: 100%; max-width: 500px; padding: 0; }
 
-        /* --- Logo / Main Headline --- */
-        .main-headline { font-size: 32px; font-weight: 700; text-align: center; margin: 20px 0 40px 0; }
-        .main-headline .part1 { color: var(--brand-red); }
-        .main-headline .part2 { color: var(--text-primary-dark); }
+        /* --- Logo Styles --- */
+        .logo-link {
+            display: block;
+            text-align: center;
+            margin: 40px 0 30px 0;
+        }
+        .main-logo {
+            max-width: 220px;
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+        .main-logo:hover {
+            transform: scale(1.05);
+        }
 
         /* --- View Transitions --- */
         .view { display: none; padding: 20px; }
@@ -98,13 +112,13 @@
             border-radius: 8px; color: var(--text-primary-dark); font-size: 16px; transition: border-color 0.3s, box-shadow 0.3s;
         }
         input:focus { outline: none; border-color: var(--brand-red); box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.25); }
-        button {
+        button, .btn-primary {
             width: 100%; padding: 15px; background: linear-gradient(90deg, var(--brand-red), #f64d54); color: white;
             border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;
             transition: transform 0.2s, box-shadow 0.3s; text-transform: uppercase; letter-spacing: 0.5px;
         }
-        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(229, 9, 20, 0.2); }
-        button:disabled { background: #555; cursor: not-allowed; opacity: 0.7; box-shadow: none; transform: none; }
+        button:hover, .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(229, 9, 20, 0.2); }
+        button:disabled, .btn-primary:disabled { background: #555; cursor: not-allowed; opacity: 0.7; box-shadow: none; transform: none; }
         .form-link { text-align: center; margin-top: 25px; color: var(--text-secondary-dark); }
         .form-link a { color: var(--brand-red); text-decoration: none; font-weight: 600; }
         .error-message {
@@ -190,10 +204,16 @@
         .dashboard-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
         .action-card {
             background-color: var(--bg-light); padding: 20px; border-radius: 12px; text-align: center; cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s; border: 1px solid var(--border-color-dark); position: relative; z-index: 2; aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-decoration: none; color: inherit;
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s, border-color 0.2s; border: 1px solid var(--border-color-dark); position: relative; z-index: 2; aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-decoration: none; color: inherit;
         }
         .action-card:hover { transform: translateY(-5px); background-color: var(--border-color-dark); }
-        .action-card .icon { font-size: 28px; margin-bottom: 10px; }
+        body[data-theme="light"] .action-card:hover {
+            background-color: #f8f9fa;
+            border-color: #adb5bd;
+        }
+        .action-card .icon { font-size: 28px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center;}
+        .action-card .icon svg { width: 28px; height: 28px; } /* Style for SVG icons */
+
         .action-card.claim .icon { color: var(--accent-green); }
         .action-card.cashback .icon { color: var(--accent-blue); }
         .action-card.coupons .icon { color: var(--brand-red); }
@@ -205,7 +225,6 @@
             line-height: 1.3;
         }
 
-        /* --- NEW: Gift Icon Animation --- */
         @keyframes gift-pulse {
             0%, 100% { transform: scale(1) rotate(0deg); }
             5%, 15% { transform: scale(1.1) rotate(-3deg); }
@@ -217,7 +236,6 @@
             animation-delay: 1s;
         }
 
-        /* --- UPDATED: Animated Border with Conic Gradient --- */
         @keyframes rotate { 100% { transform: rotate(1turn); } }
         .action-card.animated-border {
             position: relative;
@@ -268,7 +286,6 @@
             background: var(--bg-light-theme-card);
         }
 
-        /* --- NEW: Card Click Animation --- */
         .action-card.clicked-effect {
             animation: click-border-pulse 0.5s ease-out;
         }
@@ -298,6 +315,7 @@
         .history-icon {
             width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;
         }
+        .history-icon svg { width: 20px; height: 20px; }
         .history-icon.debit { background-color: rgba(229, 9, 20, 0.1); color: var(--brand-red); }
         .history-icon.credit { background-color: rgba(46, 204, 113, 0.1); color: var(--accent-green); }
         .history-info .title { font-weight: 600; font-size: 15px; }
@@ -313,11 +331,28 @@
         .status-approved { background-color: rgba(46, 204, 113, 0.2); color: var(--accent-green); }
         .status-rejected { background-color: rgba(229, 9, 20, 0.2); color: var(--brand-red); }
         .coupon-code { font-family: 'Courier New', Courier, monospace; font-weight: bold; background-color: #333; padding: 2px 5px; border-radius: 4px; color: #eee; font-size: 12px; display: inline-block; margin-top: 4px; }
+        body[data-theme="light"] .coupon-code { background-color: #e9ecef; color: #343a40; }
         .copy-btn {
             background: none; border: none; color: var(--text-secondary-dark); cursor: pointer;
             font-size: 12px; padding: 2px 5px; margin-left: 5px;
         }
-        .empty-history { text-align: center; padding: 40px 20px; background-color: var(--bg-light); border-radius: 12px; color: var(--text-secondary-dark); }
+        
+        /* NEW: Better Empty State Styles */
+        .empty-state {
+            text-align: center; padding: 40px 20px; background-color: var(--bg-light); border-radius: 12px; color: var(--text-secondary-dark);
+            border: 2px dashed var(--border-color-dark);
+        }
+        body[data-theme="light"] .empty-state {
+            background-color: var(--bg-light-theme-card);
+            border-color: var(--border-color-light-strong);
+        }
+        .empty-state-icon { font-size: 48px; margin-bottom: 15px; opacity: 0.7; }
+        .empty-state h4 { font-size: 18px; font-weight: 600; color: var(--text-primary-dark); margin-bottom: 8px; }
+        body[data-theme="light"] .empty-state h4 { color: var(--text-primary-light); }
+        .empty-state p { margin-bottom: 20px; }
+        .empty-state .btn-primary {
+            width: auto; padding: 10px 20px; font-size: 15px;
+        }
         
         /* --- Modal --- */
         .modal-overlay {
@@ -347,7 +382,49 @@
         .profile-info #profile-modal-name { font-size: 22px; font-weight: 600; }
         .profile-info #profile-modal-mobile { font-size: 16px; color: var(--text-secondary-dark); }
         #password-change-form { border-top: 1px solid var(--border-color-dark); padding-top: 20px; margin-top: 20px; }
+        body[data-theme="light"] #password-change-form { border-top-color: var(--border-color-light-strong); }
         
+        /* Scratch Card Styles */
+        #scratch-card-container {
+            position: relative;
+            width: 300px;
+            height: 150px;
+            margin: 0 auto;
+            cursor: crosshair;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #scratch-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+        .scratch-reward-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .scratch-reward-bg small {
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+
         /* Toast Notification Style */
         .toast-notification {
             position: fixed;
@@ -373,7 +450,7 @@
             body { padding: 0; }
             .container { max-width: 100%; }
             .view { border-radius: 0; min-height: 100vh; }
-            .main-headline { margin-top: 40px; }
+            .logo-link { margin-top: 50px; }
             .dashboard-actions { grid-template-columns: 1fr 1fr; } 
             .action-card p { font-size: 13px; }
         }
@@ -386,16 +463,18 @@
         
         <!-- Login View -->
         <div id="login-view" class="view active">
-            <h1 class="main-headline"><span class="part1">Ram</span><span class="part2">azone</span></h1>
+            <a href="https://ramazone.in" target="_blank" rel="noopener noreferrer" class="logo-link">
+                <img src="https://i.ibb.co/Jj0f3QQz/20250708-182433.png" alt="Ramazone Logo" class="main-logo" onerror="this.onerror=null;this.src='https://placehold.co/440x100/121828/FFFFFF?text=Ramazone';">
+            </a>
             <h1>Customer Login</h1>
             <form id="login-form">
                 <div class="form-group">
                     <label for="login-mobile">Mobile Number</label>
-                    <input type="tel" id="login-mobile" pattern="[0-9]{10}" required placeholder="10-digit mobile number">
+                    <input type="tel" id="login-mobile" inputmode="numeric" pattern="[0-9]{10}" required placeholder="10-digit mobile number">
                 </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
-                    <input type="number" id="login-password" required placeholder="••••••••">
+                    <input type="password" id="login-password" required placeholder="••••••••">
                 </div>
                 <button type="submit">Login</button>
                 <p id="login-error-msg" class="error-message"></p>
@@ -405,11 +484,13 @@
 
         <!-- Registration View -->
         <div id="registration-view" class="view">
-             <h1 class="main-headline"><span class="part1">Ram</span><span class="part2">azone</span></h1>
+             <a href="https://ramazone.in" target="_blank" rel="noopener noreferrer" class="logo-link">
+                <img src="https://i.ibb.co/Jj0f3QQz/20250708-182433.png" alt="Ramazone Logo" class="main-logo" onerror="this.onerror=null;this.src='https://placehold.co/440x100/121828/FFFFFF?text=Ramazone';">
+            </a>
              <h1>Register New Account</h1>
             <form id="register-form">
                 <div class="form-group"><label for="reg-name">Poora Naam (Full Name)</label><input type="text" id="reg-name" required></div>
-                <div class="form-group"><label for="reg-mobile">Mobile Number (10 अंक)</label><input type="tel" id="reg-mobile" pattern="[0-9]{10}" required></div>
+                <div class="form-group"><label for="reg-mobile">Mobile Number (10 अंक)</label><input type="tel" id="reg-mobile" inputmode="numeric" pattern="[0-9]{10}" required></div>
                 <div class="form-group"><label for="reg-password">Password Banayein</label><input type="password" id="reg-password" required placeholder="Kam se kam 6 akshar"></div>
                 <button type="submit">Register Karein</button>
                 <p id="register-error-msg" class="error-message"></p>
@@ -420,7 +501,7 @@
         <!-- Dashboard View -->
         <div id="dashboard-view" class="view">
             <div class="header">
-                <h1 id="user-name">Welcome!</h1>
+                <h1 id="user-greeting">Hello, Kunal!</h1>
                 <div class="header-actions">
                     <div id="refresh-btn" class="header-icon" title="Refresh Data">🔄</div>
                     <div id="theme-switcher" class="header-icon" title="Toggle Theme">☀️</div>
@@ -446,14 +527,20 @@
 
             <div class="dashboard-actions">
                 <div id="open-cashback-modal" class="action-card cashback animated-border">
-                    <div class="icon">🎁</div>
+                    <div class="icon">
+                        <!-- SVG_GIFT_ICON -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+                    </div>
                     <div class="card-text">
                         <strong>Cashback</strong>
                         <strong>Request</strong>
                     </div>
                 </div>
                 <div id="open-claim-modal" class="action-card claim">
-                     <div class="icon">💸</div>
+                     <div class="icon">
+                        <!-- SVG_CLAIM_ICON -->
+                        <svg viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M28,8l-28,0l0,17l28,0l0,-17Zm-26,2l24,0l0,3l-24,0l0,-3Z"/><path d="M13.731,18.041c0.385,-0.186 0.631,-0.564 0.631,-0.991c0,-0.69 -0.56,-1.25 -1.25,-1.25c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.427 0.246,0.805 0.631,0.991c-1.467,0.374 -2.544,1.45 -2.544,2.792l0,1.167l7.108,0l0,-1.167c0,-1.342 -1.077,-2.418 -2.544,-2.792Z"/><path d="M19.25,16.5c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Z"/><path d="M23.25,16.5c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Z"/><path d="M5.5,19.25c0,-0.69 0.56,-1.25 1.25,-1.25c0.69,0 1.25,0.56 1.25,1.25c0,0.69 -0.56,1.25 -1.25,1.25c-0.69,0 -1.25,-0.56 -1.25,-1.25Z"/><path d="M15,22l-1.5,0l-1,-2l-3,0l-1,2l-1.5,0l3.25,-5.5l1.75,0l3.25,5.5Zm-3.25,-3.25l-0.75,0l-0.75,1.5l1.5,0l0,-1.5Z" transform="matrix(1,0,0,1,10.25,1.5)"/></svg>
+                     </div>
                     <p>Claim From Wallet</p>
                 </div>
                 <div id="open-coupons-modal" class="action-card coupons">
@@ -586,6 +673,23 @@
             </div>
         </div>
     </div>
+
+    <!-- Scratch Card Modal -->
+    <div id="scratch-card-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Badhai Ho! Aapne ek reward jeeta hai!</h3>
+            <p class="modal-description">Card ko scratch karke apna inaam dekhein.</p>
+            <div id="scratch-card-container">
+                <div id="scratch-reward" class="scratch-reward-bg">
+                    <!-- Reward amount will be injected here -->
+                </div>
+                <canvas id="scratch-canvas"></canvas>
+            </div>
+            <div class="modal-actions">
+                <button id="scratch-claim-btn" class="btn-primary">Claim Reward</button>
+            </div>
+        </div>
+    </div>
     
     <!-- Toast Notification Element -->
     <div id="toast-notification" class="toast-notification"></div>
@@ -594,14 +698,15 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref, get, set, push, onValue, runTransaction, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getDatabase, ref, get, set, push, onValue, runTransaction, query, orderByChild, equalTo, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
+        // --- Firebase Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyCmgMr4cj7ec1B09eu3xpRhCwsVCeQR9v0",
             authDomain: "tipsplit-e3wes.firebaseapp.com",
             databaseURL: "https://tipsplit-e3wes-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "tipsplit-e3wes",
-            storageBucket: "tipsplit-e3wes.firebasestorage.app",
+            storageBucket: "tipsplit-e3wes.appspot.com",
             messagingSenderId: "984733883633",
             appId: "1:984733883633:web:adc1e1d22b629a6b631d50"
         };
@@ -626,6 +731,7 @@
         const couponsModal = document.getElementById('coupons-modal');
         const pendingModal = document.getElementById('pending-modal');
         const profileModal = document.getElementById('profile-modal');
+        const scratchCardModal = document.getElementById('scratch-card-modal');
 
         const claimRequestForm = document.getElementById('claim-request-form');
         const cashbackRequestForm = document.getElementById('cashback-request-form');
@@ -642,12 +748,19 @@
         const claimSubmitBtn = document.getElementById('claim-submit-btn');
         const cashbackSubmitBtn = document.getElementById('cashback-submit-btn');
 
+        // --- State Variables ---
         let currentUserData = null;
         let activeListeners = [];
         let tempClaimAmount = 0;
         
+        // Snapshots for rendering
         let claimsDataSnapshot = null;
         let cashbackDataSnapshot = null;
+
+        // Smart Scratch Card State
+        let unscratchedCardsQueue = [];
+        let isScratchCardActive = false;
+        let activeScratchCardData = null; // Holds data for the currently displayed card
 
         // --- Helper Functions ---
         function showErrorMessage(element, message) {
@@ -685,7 +798,7 @@
         }
 
         function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
             applyTheme(savedTheme);
         }
 
@@ -777,8 +890,9 @@
             const userDbRef = ref(database, 'users/' + user.uid);
             const userUnsubscribe = onValue(userDbRef, (snapshot) => {
                 if(snapshot.exists()){
+                    const oldData = currentUserData;
                     currentUserData = snapshot.val();
-                    updateDashboardUI(currentUserData, user);
+                    updateDashboardUI(currentUserData, user, oldData);
                 }
             });
             activeListeners.push(userUnsubscribe);
@@ -794,30 +908,16 @@
             const cashbackUnsubscribe = onValue(cashbackQuery, (snapshot) => {
                 cashbackDataSnapshot = snapshot;
                 
-                const userLifetimeEarningRef = ref(database, `users/${user.uid}/lifetimeEarning`);
+                unscratchedCardsQueue = [];
                 snapshot.forEach(child => {
                     const req = child.val();
                     const reqKey = child.key;
-
-                    if (req.status === 'approved' && !req.countedForLifetime) {
-                        const cashbackAmount = parseFloat(req.cashbackAmount || 0);
-
-                        if (cashbackAmount > 0) {
-                            runTransaction(userLifetimeEarningRef, (currentValue) => {
-                                return (currentValue || 0) + cashbackAmount;
-                            }).then(() => {
-                                const requestCountedRef = ref(database, `cashback_requests/${reqKey}/countedForLifetime`);
-                                set(requestCountedRef, true);
-                            }).catch((error) => {
-                                console.error("Could not update lifetime earning for transaction. Will retry on next data load.", error);
-                            });
-                        } else {
-                            const requestCountedRef = ref(database, `cashback_requests/${reqKey}/countedForLifetime`);
-                            set(requestCountedRef, true);
-                        }
+                    if (req.status === 'approved' && !req.scratched) {
+                       unscratchedCardsQueue.push({ key: reqKey, ...req });
                     }
                 });
-
+                
+                showNextScratchCard();
                 renderAllViews();
             });
             activeListeners.push(cashbackUnsubscribe);
@@ -843,16 +943,48 @@
         }
 
         // --- UI Rendering ---
-        function updateDashboardUI(dbData, authUser) {
+        
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = progress * (end - start) + start;
+                obj.innerHTML = `₹ ${value.toFixed(2)}`;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerHTML = `₹ ${parseFloat(end).toFixed(2)}`;
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function updateDashboardUI(dbData, authUser, oldData) {
             if (!dbData || !authUser) return;
+            
+            // Time-based Greeting
+            const hour = new Date().getHours();
+            let greeting = "Hello";
+            if (hour < 12) {
+                greeting = "Good Morning";
+            } else if (hour < 18) {
+                greeting = "Good Afternoon";
+            } else {
+                greeting = "Good Evening";
+            }
+            document.getElementById('user-greeting').textContent = `${greeting}, ${authUser.displayName}!`;
+
             const walletBalance = parseFloat(dbData.wallet || 0);
             const lifetimeEarning = parseFloat(dbData.lifetimeEarning || 0);
+            const oldWallet = oldData ? parseFloat(oldData.wallet || 0) : 0;
+            const oldLifetime = oldData ? parseFloat(oldData.lifetimeEarning || 0) : 0;
 
-            document.getElementById('user-name').textContent = `Welcome, ${authUser.displayName}!`;
+            animateValue(document.getElementById('wallet-balance'), oldWallet, walletBalance, 1000);
+            animateValue(document.querySelector('#lifetime-earning .highlight-amount'), oldLifetime, lifetimeEarning, 1000);
+
             document.getElementById('user-mobile').textContent = `Mobile: ${dbData.mobile}`;
-            document.getElementById('wallet-balance').textContent = `₹ ${walletBalance.toFixed(2)}`;
-            document.getElementById('lifetime-earning').innerHTML = `Lifetime Earning: <span class="highlight-amount">₹${lifetimeEarning.toFixed(2)}</span>`;
-
+            
             const openClaimModalBtn = document.getElementById('open-claim-modal');
             openClaimModalBtn.style.opacity = walletBalance >= 10 ? '1' : '0.5';
             openClaimModalBtn.style.pointerEvents = walletBalance >= 10 ? 'auto' : 'none';
@@ -865,6 +997,28 @@
             document.getElementById('profile-modal-mobile').textContent = dbData.mobile;
             claimSubmitBtn.disabled = false;
             cashbackSubmitBtn.disabled = false;
+        }
+        
+        function getEmptyStateHTML(type) {
+            let icon = '📂';
+            let title = 'Abhi Kuch Nahi Hai';
+            let text = 'Jab aapke paas naye items honge, to woh yahan dikhenge.';
+            if (type === 'history') {
+                icon = '📜';
+                title = 'Koi Transactions Nahi';
+                text = 'Aapka pehla transaction yahan dikhega.';
+            } else if (type === 'coupons') {
+                icon = '🎟️';
+                title = 'Koi Coupons Nahi';
+                text = 'Claim kiye gaye coupons yahan dikhenge.';
+            }
+            return `
+                <div class="empty-state">
+                    <div class="empty-state-icon">${icon}</div>
+                    <h4>${title}</h4>
+                    <p>${text}</p>
+                </div>
+            `;
         }
 
         function renderUnifiedHistory(claimSnapshot, cashbackSnapshot) {
@@ -880,7 +1034,7 @@
                 combinedHistory.push({ type: req.status === 'approved' ? 'credit' : 'info', date: new Date(req.requestDate), title: `Cashback: ${req.productName}`, amount: req.cashbackAmount, status: req.status });
             });
             if (combinedHistory.length === 0) {
-                historyList.innerHTML = '<p class="empty-history">Aapke paas abhi koi transactions nahi hain.</p>';
+                historyList.innerHTML = getEmptyStateHTML('history');
                 return;
             }
             combinedHistory.sort((a, b) => b.date - a.date);
@@ -888,7 +1042,11 @@
                 const itemDiv = document.createElement('div');
                 itemDiv.className = `history-item ${item.type}`;
                 const iconClass = item.type === 'debit' ? 'debit' : 'credit';
-                const iconSymbol = item.type === 'debit' ? '↑' : '↓';
+                
+                const iconContent = item.type === 'debit' 
+                    ? `<!-- SVG_UP_ARROW_ICON --><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>` 
+                    : `<!-- SVG_DOWN_ARROW_ICON --><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`;
+
                 const amountClass = item.type === 'debit' ? 'debit' : 'credit';
                 const amountPrefix = item.type === 'debit' ? '-' : '+';
                 let couponHTML = '';
@@ -899,11 +1057,11 @@
                 }
                 itemDiv.innerHTML = `
                     <div class="history-details">
-                        <div class="history-icon ${iconClass}">${iconSymbol}</div>
+                        <div class="history-icon ${iconClass}">${iconContent}</div>
                         <div class="history-info"><div class="title">${item.title}</div><div class="date">${item.date.toLocaleDateString()}</div></div>
                     </div>
                     <div class="history-amount">
-                        <div class="amount ${amountClass}">${amountPrefix} ₹${item.amount.toFixed(2)}</div>
+                        <div class="amount ${amountClass}">${amountPrefix} ₹${parseFloat(item.amount).toFixed(2)}</div>
                         <span class="status status-${item.status}">${item.status}</span>
                         ${couponHTML}
                     </div>`;
@@ -920,7 +1078,7 @@
                 if(req.status === 'approved' && req.couponCode) approvedClaims.push(req);
             });
             if (approvedClaims.length === 0) {
-                list.innerHTML = '<p class="empty-history">Aapke paas abhi koi coupons nahi hain.</p>';
+                list.innerHTML = getEmptyStateHTML('coupons');
                 return;
             }
             approvedClaims.sort((a,b) => new Date(b.requestDate) - new Date(a.requestDate));
@@ -932,7 +1090,7 @@
                     <div class="history-details">
                         <div class="history-icon debit">🎟️</div>
                         <div class="history-info">
-                            <div class="title">₹${item.claimAmount.toFixed(2)} Coupon</div>
+                            <div class="title">₹${parseFloat(item.claimAmount).toFixed(2)} Coupon</div>
                             <div class="date">${new Date(item.requestDate).toLocaleDateString()}</div>
                         </div>
                     </div>
@@ -957,7 +1115,7 @@
                 if(req.status === 'pending') pendingItems.push({type: 'Cashback', date: new Date(req.requestDate), title: `Cashback: ${req.productName}`, amount: req.cashbackAmount });
             });
             if (pendingItems.length === 0) {
-                list.innerHTML = '<p class="empty-history">Aapke paas abhi koi pending requests nahi hain.</p>';
+                list.innerHTML = getEmptyStateHTML('pending');
                 return;
             }
             pendingItems.sort((a,b) => b.date - a.date);
@@ -969,7 +1127,7 @@
                         <div class="history-icon"><span style="font-size: 20px;">⏳</span></div>
                         <div class="history-info"><div class="title">${item.title}</div><div class="date">${item.date.toLocaleDateString()}</div></div>
                     </div>
-                    <div class="history-amount"><div class="amount">₹${item.amount.toFixed(2)}</div></div>`;
+                    <div class="history-amount"><div class="amount">₹${parseFloat(item.amount).toFixed(2)}</div></div>`;
                 list.appendChild(itemDiv);
             });
         }
@@ -1047,7 +1205,7 @@
             const cashbackAmount=productPrice*.02;
             const newRequestRef=push(ref(database,"cashback_requests"));
             try{
-                await set(newRequestRef,{ requestId:newRequestRef.key, userMobile:currentUserData.mobile, userName:auth.currentUser.displayName, productName:productName, productPrice:productPrice, cashbackAmount:cashbackAmount, status:"pending", requestDate:(new Date).toISOString(), userId: auth.currentUser.uid });
+                await set(newRequestRef,{ requestId:newRequestRef.key, userMobile:currentUserData.mobile, userName:auth.currentUser.displayName, productName:productName, productPrice:productPrice, cashbackAmount:cashbackAmount, status:"pending", requestDate:(new Date).toISOString(), userId: auth.currentUser.uid, scratched: false });
                 showToast("Cashback request submit ho gaya!");
                 cashbackRequestForm.reset();
                 closeModal(cashbackModal);
@@ -1089,15 +1247,119 @@
                 showErrorMessage(passwordChangeErrorMsg, "Purana password galat hai ya koi aur error aayi.");
             }
         }
+        
+        // --- Smart Scratch Card Logic ---
+        function showNextScratchCard() {
+            if (isScratchCardActive || unscratchedCardsQueue.length === 0) {
+                return;
+            }
+
+            isScratchCardActive = true;
+            const cardData = unscratchedCardsQueue[0];
+            activeScratchCardData = cardData; 
+            setupScratchCanvas(cardData);
+            openModal(scratchCardModal);
+        }
+
+        function setupScratchCanvas(cardData) {
+            const canvas = document.getElementById('scratch-canvas');
+            const rewardDiv = document.getElementById('scratch-reward');
+            const container = document.getElementById('scratch-card-container');
+            const ctx = canvas.getContext('2d');
+
+            rewardDiv.innerHTML = `₹${cardData.cashbackAmount.toFixed(2)}<small>Aapke Wallet Mein!</small>`;
+
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+
+            ctx.fillStyle = '#bdc3c7';
+            ctx.fillRect(0, 0, width, height);
+            
+            ctx.font = 'bold 20px Poppins';
+            ctx.fillStyle = '#2c3e50';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('SCRATCH HERE', width / 2, height / 2);
+
+            let isDrawing = false;
+
+            const scratch = (e) => {
+                if (!isDrawing) return;
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2, false);
+                ctx.fill();
+            };
+            
+            const start = (e) => { isDrawing = true; scratch(e); };
+            const stop = () => { if (isDrawing) { isDrawing = false; }};
+            
+            canvas.onmousedown = start;
+            canvas.onmousemove = scratch;
+            canvas.onmouseup = stop;
+            canvas.onmouseleave = stop;
+            
+            canvas.ontouchstart = (e) => { e.preventDefault(); start(e); };
+            canvas.ontouchmove = (e) => { e.preventDefault(); scratch(e); };
+            canvas.ontouchend = stop;
+        }
+
+        async function processReward(amount, key) {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const userRef = ref(database, 'users/' + user.uid);
+            const cashbackRef = ref(database, `cashback_requests/${key}`);
+            
+            try {
+                await runTransaction(userRef, (data) => {
+                    if (data) {
+                        data.wallet = (data.wallet || 0) + amount;
+                        data.lifetimeEarning = (data.lifetimeEarning || 0) + amount;
+                    }
+                    return data;
+                });
+                await update(cashbackRef, { scratched: true });
+                showToast(`Badhai! ₹${amount.toFixed(2)} aapke wallet mein add ho gaye hain.`);
+            } catch (error) {
+                console.error("Reward process karne mein error aayi: ", error);
+                showToast("Reward process karne mein error aayi.");
+            }
+        }
+        
+        document.getElementById('scratch-claim-btn').addEventListener('click', async () => {
+            if (!activeScratchCardData) return;
+
+            const btn = document.getElementById('scratch-claim-btn');
+            btn.disabled = true;
+            btn.textContent = 'Claiming...';
+
+            await processReward(activeScratchCardData.cashbackAmount, activeScratchCardData.key);
+
+            closeModal(scratchCardModal);
+            isScratchCardActive = false;
+            unscratchedCardsQueue.shift(); 
+            activeScratchCardData = null;
+
+            btn.disabled = false;
+            btn.textContent = 'Claim Reward';
+
+            setTimeout(showNextScratchCard, 500);
+        });
 
         // --- Initial Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
 
-            // NEW: Add click animation listener to all action cards
             document.querySelectorAll('.action-card').forEach(card => {
                 card.addEventListener('click', function(e) {
-                    // Prevent animation on the link card if you want instant navigation
                     if (card.tagName.toLowerCase() === 'a') {
                         return;
                     }
@@ -1133,7 +1395,6 @@
         passwordChangeForm.addEventListener('submit', handlePasswordChange);
         modalConfirmBtn.addEventListener('click', processClaimConfirmation);
 
-        // Event delegation for copy buttons
         document.getElementById('coupons-list').addEventListener('click', (e) => {
             if (e.target && e.target.classList.contains('copy-btn')) {
                 const coupon = e.target.dataset.coupon;
