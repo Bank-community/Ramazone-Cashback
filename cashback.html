@@ -23,7 +23,7 @@
             --border-color-light-strong: #ced4da;
             
             --brand-red: #e50914;
-            --brand-red-hover: #f40612;
+            --brand-red-hover: #c40812;
             --accent-blue: #3498db;
             --accent-green: #2ecc71;
             --accent-yellow: #f1c40f;
@@ -70,13 +70,13 @@
         body[data-theme="light"] label, body[data-theme="light"] .form-link, body[data-theme="light"] .section-title, body[data-theme="light"] .modal-description, body[data-theme="light"] .history-info .date {
             color: var(--text-secondary-light);
         }
-        body[data-theme="light"] #logout-btn, body[data-theme="light"] .btn-secondary {
+        body[data-theme="light"] .btn-secondary {
             background-color: #e8eef3;
             color: var(--text-primary-light);
         }
-        body[data-theme="light"] .header-actions .header-icon:hover { background-color: #e8eef3; }
+        body[data-theme="light"] .header-icon:hover { background-color: #e8eef3; }
         body[data-theme="light"] .notification-dot { border-color: var(--bg-light-theme-card); }
-
+        
         .container { width: 100%; max-width: 500px; padding: 0; }
 
         /* --- Logo Styles --- */
@@ -112,31 +112,81 @@
             background-color: rgba(255, 107, 107, 0.1); padding: 10px; border-radius: 6px;
         }
 
-        /* --- Dashboard --- */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .header h1 { text-align: left; margin: 0; font-size: 22px; }
-        .header-actions { display: flex; align-items: center; gap: 10px; }
-        
-        .header-icon {
-            font-size: 22px; cursor: pointer; line-height: 1; padding: 8px;
-            border-radius: 50%; transition: background-color 0.2s, transform 0.2s; user-select: none; position: relative;
+        /* --- FINAL: Dashboard Header with Emojis --- */
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            width: 100%;
         }
-        .header-icon:hover { background-color: var(--border-color-dark); transform: scale(1.1); }
-        .header-icon.refreshing { animation: spin 1s ease-in-out; pointer-events: none; }
+        .header h1 {
+            text-align: center;
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+        }
+        .header-actions-bar {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 15px;
+        }
+        .header-icon {
+            font-size: 24px; /* Adjusted for emojis */
+            cursor: pointer; 
+            line-height: 1; 
+            padding: 8px;
+            border-radius: 50%; 
+            transition: background-color 0.2s, transform 0.2s; 
+            user-select: none; 
+            position: relative;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            text-decoration: none;
+        }
+        .header-icon:hover { 
+            background-color: var(--border-color-dark); 
+            transform: scale(1.1);
+        }
+        
         @keyframes spin { from { transform: rotate(0deg) scale(1.1); } to { transform: rotate(360deg) scale(1.1); } }
+        #refresh-btn.refreshing {
+            animation: spin 1s linear;
+            pointer-events: none;
+        }
 
-        /* Notification Dot */
+        #logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--brand-red);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            margin-left: auto; /* Pushes logout to the far right */
+            font-size: 20px; /* For emoji */
+        }
+        #logout-btn:hover {
+            background-color: var(--brand-red-hover);
+            transform: scale(1.05);
+        }
+        #logout-btn span {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 1;
+        }
+        
         .notification-dot {
             position: absolute; top: 5px; right: 5px; width: 10px; height: 10px; background-color: var(--brand-red);
             border-radius: 50%; border: 2px solid var(--bg-dark); display: none;
         }
+        body[data-theme="light"] .notification-dot { border-color: var(--bg-light-theme-card); }
         .notification-dot.active { display: block; }
-
-        #logout-btn {
-            width: auto; padding: 8px 15px; font-size: 14px; font-weight: 500; background: var(--bg-light);
-            text-transform: none; letter-spacing: 0; box-shadow: none;
-        }
-        #logout-btn:hover { background: var(--border-color-dark); transform: none; box-shadow: none; }
 
         .wallet-card {
             background: linear-gradient(135deg, #2980b9, #3498db); color: white; padding: 25px;
@@ -396,15 +446,23 @@
         <!-- Dashboard View -->
         <div id="dashboard-view" class="view">
             <div class="header">
-                <h1 id="user-greeting">Hello, Kunal!</h1>
-                <div class="header-actions">
+                <h1 id="user-greeting">Good Morning, Kunal!</h1>
+                <div class="header-actions-bar">
                     <div id="notification-btn" class="header-icon" title="Notifications">
                         🔔
                         <span id="notification-dot" class="notification-dot"></span>
                     </div>
-                    <div id="refresh-btn" class="header-icon" title="Refresh Data">🔄</div>
-                    <div id="theme-switcher" class="header-icon" title="Toggle Theme">☀️</div>
-                    <button id="logout-btn">Logout</button>
+                    <div id="theme-switcher" class="header-icon" title="Toggle Theme">🌙</div>
+                    <a href="https://ramazone.in" target="_blank" rel="noopener noreferrer" id="store-btn" class="header-icon" title="Online Store">
+                        🛍️
+                    </a>
+                    <div id="refresh-btn" class="header-icon" title="Refresh Data">
+                        🔄
+                    </div>
+                    <div id="logout-btn">
+                        🚪
+                        <span>Logout</span>
+                    </div>
                 </div>
             </div>
             
@@ -687,8 +745,8 @@
         // --- Theme Management ---
         function applyTheme(theme) {
             document.body.dataset.theme = theme;
-            themeSwitcher.textContent = theme === 'light' ? '🌙' : '☀️';
-            localStorage.setItem('theme', theme);
+            themeSwitcher.innerHTML = theme === 'light' ? '🌙' : '☀️';
+            themeSwitcher.classList.toggle('active-icon', theme === 'dark');
         }
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
@@ -697,6 +755,7 @@
         themeSwitcher.addEventListener('click', () => {
             const newTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
             applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
         });
 
         // --- Authentication ---
@@ -825,7 +884,8 @@
         function refreshData() {
             if (!auth.currentUser) return;
             refreshBtn.classList.add('refreshing');
-            attachRealtimeListeners(auth.currentUser);
+            // Re-attaching listeners effectively refreshes all data
+            attachRealtimeListeners(auth.currentUser); 
             setTimeout(() => {
                 refreshBtn.classList.remove('refreshing');
             }, 1000);
@@ -844,11 +904,11 @@
             if (!dbData || !authUser) return;
             
             const hour = new Date().getHours();
-            let greeting = "Hello";
-            if (hour < 12) { greeting = "Good Morning"; }
-            else if (hour < 18) { greeting = "Good Afternoon"; }
-            else { greeting = "Good Evening"; }
-            document.getElementById('user-greeting').textContent = `${greeting}, ${authUser.displayName}!`;
+            let greeting = "Good Morning";
+            if (hour >= 12 && hour < 17) { greeting = "Good Afternoon"; }
+            else if (hour >= 17) { greeting = "Good Evening"; }
+            
+            document.getElementById('user-greeting').textContent = `${greeting}, ${authUser.displayName || 'Kunal'}!`;
 
             document.getElementById('wallet-balance').textContent = `₹ ${(dbData.wallet || 0).toFixed(2)}`;
             document.querySelector('#lifetime-earning .highlight-amount').textContent = `₹ ${(dbData.lifetimeEarning || 0).toFixed(2)}`;
@@ -856,7 +916,7 @@
             
             const profileDisplay = document.getElementById('profile-display');
             const profileModalDisplay = document.getElementById('profile-modal-display');
-            const initial = authUser.displayName ? authUser.displayName.charAt(0).toUpperCase() : 'R';
+            const initial = authUser.displayName ? authUser.displayName.charAt(0).toUpperCase() : 'K';
             const placeholderUrl = `https://placehold.co/80x80/ffffff/2980b9?text=${initial}`;
 
             profileDisplay.src = dbData.profilePictureUrl || placeholderUrl;
@@ -1099,6 +1159,7 @@
         // --- Notification Logic ---
         function checkNewNotifications() {
             if (!currentUserData || allNotifications.length === 0) {
+                notificationBtn.classList.remove('active-icon');
                 notificationDot.classList.remove('active');
                 return;
             }
@@ -1106,8 +1167,10 @@
             const latestNotification = allNotifications.sort((a,b) => b.timestamp - a.timestamp)[0];
             
             if (latestNotification && latestNotification.timestamp > lastSeenTimestamp) {
+                notificationBtn.classList.add('active-icon');
                 notificationDot.classList.add('active');
             } else {
+                notificationBtn.classList.remove('active-icon');
                 notificationDot.classList.remove('active');
             }
         }
@@ -1131,6 +1194,7 @@
                 const timestampRef = ref(database, `users/${user.uid}/lastSeenNotificationTimestamp`);
                 await set(timestampRef, latestNotification.timestamp);
             }
+            notificationBtn.classList.remove('active-icon');
             notificationDot.classList.remove('active');
         });
 
