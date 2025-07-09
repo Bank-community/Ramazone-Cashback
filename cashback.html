@@ -261,6 +261,50 @@
         .action-card.cashback .icon { animation: gift-pulse 4s infinite ease-in-out; animation-delay: 1s; }
 
         .section-title { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: var(--text-secondary-dark); }
+        
+        /* NEW: Filter Bar Styles */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color-dark);
+            background-color: transparent;
+            color: var(--text-secondary-dark);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .filter-btn:hover {
+            background-color: var(--border-color-dark);
+            color: var(--text-primary-dark);
+        }
+        .filter-btn.active {
+            background-color: var(--brand-red);
+            color: white;
+            border-color: var(--brand-red);
+        }
+        body[data-theme="light"] .filter-btn {
+             border-color: var(--border-color-light-strong);
+        }
+        body[data-theme="light"] .filter-btn:hover {
+            background-color: #e8eef3;
+            color: var(--text-primary-light);
+        }
+        body[data-theme="light"] .filter-btn.active {
+            background-color: var(--brand-red);
+            color: white;
+            border-color: var(--brand-red);
+        }
+
+
         .history-list { display: flex; flex-direction: column; gap: 12px; }
         .history-item {
             display: flex; align-items: center; justify-content: space-between; background-color: var(--bg-light);
@@ -517,22 +561,32 @@
                      <div class="icon">🎟️</div>
                     <p>My Coupons</p>
                 </div>
-                <div id="open-pending-modal" class="action-card pending">
-                     <div class="icon">⏳</div>
-                    <p>Pending Requests</p>
-                </div>
+                <!-- UPDATED: WhatsApp link now has an ID for dynamic updates -->
+                 <a href="#" id="whatsapp-support-link" target="_blank" class="action-card whatsapp">
+                    <div class="icon">💬</div>
+                    <p>WhatsApp Support</p>
+                </a>
                  <div id="open-profile-modal" class="action-card profile">
                      <div class="icon">👤</div>
                     <p>My Profile</p>
                 </div>
-                 <a href="https://wa.me/917903698180?text=Ramazone%20cashback%0A%0AHelp%20me!" target="_blank" class="action-card whatsapp">
-                    <div class="icon">💬</div>
-                    <p>WhatsApp Support</p>
-                </a>
+                 <div id="open-pending-modal" class="action-card pending">
+                     <div class="icon">⏳</div>
+                    <p>Pending Requests</p>
+                </div>
             </div>
 
             <div class="section">
-                <h2 class="section-title">Haal Hi Ke Transactions</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                     <h2 class="section-title">Haal Hi Ke Transactions</h2>
+                </div>
+                <!-- NEW: Filter Bar -->
+                <div class="filter-bar" id="filter-bar">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="cashback">Cashback</button>
+                    <button class="filter-btn" data-filter="claim">Claims</button>
+                    <button class="filter-btn" data-filter="approved">Approved</button>
+                </div>
                 <div id="unified-history-list" class="history-list"></div>
             </div>
         </div>
@@ -706,6 +760,8 @@
         const profilePictureInput = document.getElementById('profile-picture-input');
         const uploadStatus = document.getElementById('upload-status');
         const walletShareBtn = document.getElementById('wallet-share-btn');
+        const whatsappSupportLink = document.getElementById('whatsapp-support-link');
+        const filterBar = document.getElementById('filter-bar');
         
         // Modals & Forms
         const passwordModal = document.getElementById('password-modal');
@@ -737,6 +793,7 @@
         let isScratchCardActive = false;
         let activeScratchCardData = null;
         let tempClaimAmount = 0;
+        let activeFilter = 'all'; // NEW: State for the active filter
 
         // --- Helper Functions ---
         function showErrorMessage(element, message) {
@@ -904,7 +961,6 @@
         function refreshData() {
             if (!auth.currentUser) return;
             refreshBtn.classList.add('refreshing');
-            // Re-attaching listeners effectively refreshes all data
             attachRealtimeListeners(auth.currentUser); 
             setTimeout(() => {
                 refreshBtn.classList.remove('refreshing');
@@ -930,7 +986,8 @@
             
             document.getElementById('user-greeting').textContent = `${greeting}, ${authUser.displayName || 'Kunal'}!`;
 
-            document.getElementById('wallet-balance').textContent = `₹ ${(dbData.wallet || 0).toFixed(2)}`;
+            const walletBalance = (dbData.wallet || 0).toFixed(2);
+            document.getElementById('wallet-balance').textContent = `₹ ${walletBalance}`;
             document.querySelector('#lifetime-earning .highlight-amount').textContent = `₹ ${(dbData.lifetimeEarning || 0).toFixed(2)}`;
             document.getElementById('user-mobile').textContent = `Mobile: ${dbData.mobile}`;
             
@@ -946,6 +1003,10 @@
 
             document.getElementById('profile-modal-name').textContent = authUser.displayName;
             document.getElementById('profile-modal-mobile').textContent = dbData.mobile;
+
+            // NEW: Update WhatsApp link dynamically
+            const whatsappMessage = `Help Required\n\nName: ${authUser.displayName || 'N/A'}\nWallet Balance: ₹${walletBalance}`;
+            whatsappSupportLink.href = `https://wa.me/917903698180?text=${encodeURIComponent(whatsappMessage)}`;
         }
 
         function getEmptyStateHTML(type) {
@@ -962,24 +1023,40 @@
             let combinedHistory = [];
             if (claimSnapshot.exists()) claimSnapshot.forEach(child => {
                 const req = child.val();
-                combinedHistory.push({ type: 'debit', date: new Date(req.requestDate), title: 'Wallet Claim', amount: req.claimAmount, status: req.status, couponCode: req.couponCode });
+                combinedHistory.push({ type: 'claim', date: new Date(req.requestDate), title: 'Wallet Claim', amount: req.claimAmount, status: req.status, couponCode: req.couponCode });
             });
             if(cashbackSnapshot.exists()) cashbackSnapshot.forEach(child => {
                 const req = child.val();
-                combinedHistory.push({ type: req.status === 'approved' ? 'credit' : 'info', date: new Date(req.requestDate), title: `Cashback: ${req.productName}`, amount: req.cashbackAmount, status: req.status });
+                combinedHistory.push({ type: 'cashback', date: new Date(req.requestDate), title: `Cashback: ${req.productName}`, amount: req.cashbackAmount, status: req.status });
             });
-            if (combinedHistory.length === 0) { historyList.innerHTML = getEmptyStateHTML('history'); return; }
-            combinedHistory.sort((a, b) => b.date - a.date);
-            combinedHistory.forEach(item => {
+            
+            // NEW: Filtering logic
+            let filteredHistory = combinedHistory;
+            if (activeFilter !== 'all') {
+                if (activeFilter === 'cashback' || activeFilter === 'claim') {
+                    filteredHistory = combinedHistory.filter(item => item.type === activeFilter);
+                } else {
+                    filteredHistory = combinedHistory.filter(item => item.status === activeFilter);
+                }
+            }
+
+            if (filteredHistory.length === 0) { historyList.innerHTML = getEmptyStateHTML('history'); return; }
+            
+            filteredHistory.sort((a, b) => b.date - a.date);
+            filteredHistory.forEach(item => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = `history-item ${item.type}`;
-                const iconClass = item.type === 'debit' ? 'debit' : 'credit';
-                const iconContent = item.type === 'debit' ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`;
-                const amountClass = item.type === 'debit' ? 'debit' : 'credit';
-                const amountPrefix = item.type === 'debit' ? '-' : '+';
+                const borderClass = item.type === 'claim' ? 'debit' : 'credit';
+                itemDiv.className = `history-item ${borderClass}`;
+
+                const iconClass = item.type === 'claim' ? 'debit' : 'credit';
+                const iconContent = item.type === 'claim' ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`;
+                const amountClass = item.type === 'claim' ? 'debit' : 'credit';
+                const amountPrefix = item.type === 'claim' ? '-' : '+';
+                
                 let couponHTML = '';
-                if (item.type === 'debit' && item.status === 'approved' && item.couponCode) { couponHTML = `<span class="coupon-code">${item.couponCode}</span>`; }
-                else if (item.type === 'debit' && item.status === 'rejected') { couponHTML = `<span class="coupon-code">Refunded</span>`; }
+                if (item.type === 'claim' && item.status === 'approved' && item.couponCode) { couponHTML = `<span class="coupon-code">${item.couponCode}</span>`; }
+                else if (item.type === 'claim' && item.status === 'rejected') { couponHTML = `<span class="coupon-code">Refunded</span>`; }
+                
                 itemDiv.innerHTML = `<div class="history-details"><div class="history-icon ${iconClass}">${iconContent}</div><div class="history-info"><div class="title">${item.title}</div><div class="date">${item.date.toLocaleDateString()}</div></div></div><div class="history-amount"><div class="amount ${amountClass}">${amountPrefix} ₹${parseFloat(item.amount).toFixed(2)}</div><span class="status status-${item.status}">${item.status}</span>${couponHTML}</div>`;
                 historyList.appendChild(itemDiv);
             });
@@ -1409,6 +1486,20 @@
                         showToast('Share karne mein error aayi.');
                     }
                 }
+            });
+
+            // NEW: Filter Bar Logic
+            filterBar.addEventListener('click', (e) => {
+                const target = e.target.closest('.filter-btn');
+                if (!target) return;
+
+                // Update active button style
+                filterBar.querySelector('.active').classList.remove('active');
+                target.classList.add('active');
+
+                // Update filter state and re-render history
+                activeFilter = target.dataset.filter;
+                renderUnifiedHistory(claimsDataSnapshot, cashbackDataSnapshot);
             });
         });
 
