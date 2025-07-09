@@ -21,6 +21,13 @@
         .thumbnail { cursor: pointer; border: 2px solid transparent; transition: border-color 0.3s; }
         .thumbnail.active { border-color: var(--primary-color); }
         
+        /* Main image container style for better touch interaction */
+        #main-image-container {
+            touch-action: pan-y; /* Allow vertical scroll but handle horizontal touch in JS */
+            user-select: none; /* Prevent text selection on drag */
+            -webkit-user-select: none;
+        }
+
         #image-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; flex-direction: column; }
         #image-modal img { max-width: 90%; max-height: 85%; object-fit: contain; }
         #image-modal .close { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; transition: 0.3s; }
@@ -57,7 +64,7 @@
                 <!-- Product Image Gallery -->
                 <div>
                     <div class="rounded-xl mb-4 cursor-pointer" id="main-image-container">
-                        <img id="main-product-image" src="" alt="Main Product Image" class="w-full h-auto object-cover rounded-xl">
+                        <img id="main-product-image" src="" alt="Main Product Image" class="w-full h-auto object-cover rounded-xl pointer-events-none">
                     </div>
                     <div class="grid grid-cols-5 gap-2" id="thumbnail-gallery"></div>
                 </div>
@@ -93,11 +100,11 @@
         </div>
         <!-- Related Products -->
         <div id="related-products-section" class="mt-12" style="display: none;">
-            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">You Might Also Like</h2>
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Aapko yeh bhi pasand aa sakta hai</h2>
             <div id="related-products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
         </div>
     </main>
-    <div id="loading-indicator" class="text-center py-20"><p class="text-lg font-semibold">Loading Product...</p></div>
+    <div id="loading-indicator" class="text-center py-20"><p class="text-lg font-semibold">Product load ho raha hai...</p></div>
 
     <!-- Full Screen Image Modal with Slider Controls -->
     <div id="image-modal">
@@ -125,7 +132,7 @@
 
         // --- Global Variables ---
         let modalImages = [];
-        let currentModalImageIndex = 0;
+        let currentImageIndex = 0; // Renamed for clarity
 
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -133,14 +140,12 @@
             const productId = params.get('id');
 
             if (productId === null) {
-                // Handle case where no product ID is in the URL
-                document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">Product ID not found in URL.</p>';
+                document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">URL mein product ID nahi mila.</p>';
                 document.getElementById('loading-indicator').style.display = 'none';
                 document.getElementById('product-content').style.display = 'block';
                 return;
             }
 
-            // Fetch product data from Firebase
             const productRef = database.ref(`ramazone/homepage/festiveCollection/products/${productId}`);
             productRef.get().then((snapshot) => {
                 if (snapshot.exists()) {
@@ -150,19 +155,17 @@
                     document.getElementById('loading-indicator').style.display = 'none';
                     document.getElementById('product-content').style.display = 'block';
                 } else {
-                    // Handle case where product ID does not exist in the database
-                    document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">Sorry, this product could not be found.</p>';
+                    document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">Maaf kijiye, yeh product nahi mil saka.</p>';
                     document.getElementById('loading-indicator').style.display = 'none';
                     document.getElementById('product-content').style.display = 'block';
                 }
             }).catch(error => {
                 console.error("Firebase fetch error:", error);
-                document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">Error loading product data.</p>';
+                document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">Product data load karne mein error hua.</p>';
                 document.getElementById('loading-indicator').style.display = 'none';
                 document.getElementById('product-content').style.display = 'block';
             });
 
-            // Initialize the image modal functionality
             setupImageModal();
         });
 
@@ -174,7 +177,6 @@
          * @param {string} id - The product's unique ID.
          */
         function loadProduct(data, id) {
-            // Set Meta Tags for rich social media sharing (e.g., on WhatsApp, Facebook)
             const firstImage = (data.images && data.images.length > 0) ? data.images[0] : data.imageUrl;
             const plainDescription = `Check out this amazing product: ${data.name} on Ramazone!`;
 
@@ -184,11 +186,9 @@
             document.querySelector('meta[property="og:image"]').setAttribute('content', firstImage || 'https://i.ibb.co/My6h0gdd/20250706-230221.png');
             document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
 
-            // Populate main product content
             document.getElementById('product-title').textContent = data.name || 'Product Name';
             document.getElementById('product-price').textContent = data.price ? `₹${data.price}` : `₹${data.offer || 'N/A'}`;
 
-            // Display discount if applicable
             if (data.originalPrice && data.price) {
                 const discount = Math.round(((data.originalPrice - data.price) / data.originalPrice) * 100);
                 if (discount > 0) {
@@ -198,45 +198,119 @@
                 }
             }
 
-            // Display product description if it exists
             if (data.description) {
                 document.getElementById('description-section').style.display = 'block';
                 document.getElementById('product-description').innerHTML = data.description;
             }
 
-            // Image Gallery Setup
-            const mainImage = document.getElementById('main-product-image');
-            const gallery = document.getElementById('thumbnail-gallery');
             modalImages = data.images && data.images.length > 0 ? data.images : [data.imageUrl];
             
-            if(modalImages[0]) mainImage.src = modalImages[0];
-            
-            gallery.innerHTML = ''; // Clear previous thumbnails
+            // Initial image setup
+            showImage(0); // Use the new function to show the first image
+
+            const gallery = document.getElementById('thumbnail-gallery');
+            gallery.innerHTML = ''; 
             modalImages.forEach((imgSrc, index) => {
                 const img = document.createElement('img');
                 img.src = imgSrc;
                 img.alt = `${data.name} thumbnail ${index + 1}`;
                 img.className = 'thumbnail w-full h-auto object-cover rounded-md';
-                if (index === 0) img.classList.add('active'); // Highlight the first thumbnail
+                if (index === 0) img.classList.add('active');
                 
-                // Add click event to change main image and update active thumbnail
-                img.addEventListener('click', () => {
-                    mainImage.src = imgSrc;
-                    currentModalImageIndex = index;
-                    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-                    img.classList.add('active');
-                });
+                img.addEventListener('click', () => showImage(index));
                 gallery.appendChild(img);
             });
             
-            // --- UPDATED WHATSAPP MESSAGE ---
-            // The product link is now included in the message.
+            // Setup swipe functionality for the main image
+            setupImageSwipe();
+
             const productLink = window.location.href;
             const whatsappMessage = `🛍️ *Ramazone Store Order* 🛍️\n\nHello! I'm interested in this product:\n\n*Product:* ${data.name}\n*Price:* ₹${data.price || data.offer}\n*Product ID:* ${id}\n*Product Link:* ${productLink}\n\nPlease let me know if it's available.`;
             document.getElementById('whatsapp-order-link').href = `https://wa.me/${sellerPhoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
             
-            // Set up the native share button functionality
             setupShareButton(data);
+        }
+
+        /**
+         * Displays a specific image and updates thumbnails.
+         * @param {number} index - The index of the image to show in the modalImages array.
+         */
+        function showImage(index) {
+            if (!modalImages || modalImages.length === 0) return;
+
+            // Loop around if index is out of bounds
+            if (index >= modalImages.length) {
+                index = 0;
+            } else if (index < 0) {
+                index = modalImages.length - 1;
+            }
+            
+            currentImageIndex = index;
+            const mainImage = document.getElementById('main-product-image');
+            mainImage.src = modalImages[currentImageIndex];
+
+            // Update active thumbnail
+            document.querySelectorAll('.thumbnail').forEach((thumb, thumbIndex) => {
+                if (thumbIndex === currentImageIndex) {
+                    thumb.classList.add('active');
+                } else {
+                    thumb.classList.remove('active');
+                }
+            });
+        }
+
+        /**
+         * NEW: Sets up touch and mouse swipe functionality for the main image.
+         */
+        function setupImageSwipe() {
+            const imageContainer = document.getElementById('main-image-container');
+            let touchStartX = 0;
+            let touchEndX = 0;
+            let isDragging = false;
+
+            const handleSwipe = () => {
+                // Swipe left (next image)
+                if (touchEndX < touchStartX - 50) {
+                    showImage(currentImageIndex + 1);
+                }
+                // Swipe right (previous image)
+                if (touchEndX > touchStartX + 50) {
+                    showImage(currentImageIndex - 1);
+                }
+            };
+
+            // Touch events
+            imageContainer.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            imageContainer.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+
+            // Mouse events for desktop dragging
+            imageContainer.addEventListener('mousedown', e => {
+                isDragging = true;
+                touchStartX = e.screenX;
+                imageContainer.style.cursor = 'grabbing';
+            });
+
+            imageContainer.addEventListener('mouseup', e => {
+                if (isDragging) {
+                    isDragging = false;
+                    touchEndX = e.screenX;
+                    handleSwipe();
+                    imageContainer.style.cursor = 'pointer';
+                }
+            });
+            
+            imageContainer.addEventListener('mouseleave', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    imageContainer.style.cursor = 'pointer';
+                }
+            });
         }
 
         /**
@@ -259,7 +333,6 @@
                         }
                     });
 
-                    // Shuffle and take the first 4 products
                     productList.sort(() => 0.5 - Math.random());
                     
                     productList.slice(0, 4).forEach(prod => {
@@ -297,27 +370,22 @@
             const prevBtn = document.querySelector("#image-modal .prev");
             const nextBtn = document.querySelector("#image-modal .next");
 
-            // Open modal when the main image is clicked
             mainImageContainer.onclick = () => {
                 modal.style.display = "flex";
-                modalImg.src = modalImages[currentModalImageIndex];
+                modalImg.src = modalImages[currentImageIndex];
             }
-            // Close modal with the 'X' button
             closeBtn.onclick = () => modal.style.display = "none";
             
-            const showImage = (index) => {
-                // Loop through images
+            const showModalImage = (index) => {
                 if(index >= modalImages.length) { index = 0; }
                 if(index < 0) { index = modalImages.length - 1; }
                 modalImg.src = modalImages[index];
-                currentModalImageIndex = index;
+                currentImageIndex = index; // Keep modal and main view in sync
             };
 
-            // Navigation controls
-            prevBtn.onclick = (e) => { e.stopPropagation(); showImage(currentModalImageIndex - 1); };
-            nextBtn.onclick = (e) => { e.stopPropagation(); showImage(currentModalImageIndex + 1); };
+            prevBtn.onclick = (e) => { e.stopPropagation(); showModalImage(currentImageIndex - 1); };
+            nextBtn.onclick = (e) => { e.stopPropagation(); showModalImage(currentImageIndex + 1); };
             
-            // Close modal by clicking on the background
             modal.onclick = (e) => { if (e.target === modal) { modal.style.display = "none"; } }
         }
 
@@ -328,7 +396,6 @@
         function setupShareButton(productData) {
             const shareButton = document.getElementById('share-button');
             
-            // Text format for sharing (bolding with asterisks for WhatsApp)
             const productName = `Product Name:- *${productData.name.toUpperCase().trim()}*`;
             const productPrice = `Price:- *₹${productData.price || productData.offer}*`;
             const closingText = `✨ Discover more amazing deals at Ramazone! ✨`;
@@ -337,7 +404,6 @@
             const shareText = `${productName}\n${productPrice}\n\n${closingText}\n${productLink}`;
 
             shareButton.addEventListener('click', async () => {
-                // Use Web Share API if available (on mobile)
                 if (navigator.share) {
                     try {
                         await navigator.share({ text: shareText });
@@ -345,7 +411,6 @@
                         console.error('Share failed:', err.message);
                     }
                 } else {
-                    // Fallback for desktops: copy link to clipboard
                     try {
                         const textArea = document.createElement('textarea');
                         textArea.value = window.location.href;
