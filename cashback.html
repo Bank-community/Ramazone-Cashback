@@ -112,7 +112,7 @@
             background-color: rgba(255, 107, 107, 0.1); padding: 10px; border-radius: 6px;
         }
 
-        /* --- FINAL: Dashboard Header with Emojis --- */
+        /* --- FINAL: Dashboard Header with SVG URLs --- */
         .header {
             display: flex;
             flex-direction: column;
@@ -134,7 +134,7 @@
             gap: 15px;
         }
         .header-icon {
-            font-size: 24px; /* Adjusted for emojis */
+            font-size: 24px; 
             cursor: pointer; 
             line-height: 1; 
             padding: 8px;
@@ -151,11 +151,23 @@
             background-color: var(--border-color-dark); 
             transform: scale(1.1);
         }
+        .header-icon img {
+            width: 24px;
+            height: 24px;
+            transition: filter 0.3s;
+        }
+        /* Default dark mode: make icons white */
+        .header-icon img {
+            filter: invert(1);
+        }
+        /* Light mode: make icons black (original color) */
+        body[data-theme="light"] .header-icon img {
+            filter: none;
+        }
         
-        @keyframes spin { from { transform: rotate(0deg) scale(1.1); } to { transform: rotate(360deg) scale(1.1); } }
-        #refresh-btn.refreshing {
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        #refresh-btn.refreshing img {
             animation: spin 1s linear;
-            pointer-events: none;
         }
 
         #logout-btn {
@@ -169,11 +181,15 @@
             cursor: pointer;
             transition: background-color 0.2s, transform 0.2s;
             margin-left: auto; /* Pushes logout to the far right */
-            font-size: 20px; /* For emoji */
         }
         #logout-btn:hover {
             background-color: var(--brand-red-hover);
             transform: scale(1.05);
+        }
+        #logout-btn img {
+            width: 18px;
+            height: 18px;
+            filter: invert(1); /* Always white */
         }
         #logout-btn span {
             font-weight: 500;
@@ -449,18 +465,20 @@
                 <h1 id="user-greeting">Good Morning, Kunal!</h1>
                 <div class="header-actions-bar">
                     <div id="notification-btn" class="header-icon" title="Notifications">
-                        🔔
+                        <img src="https://www.svgrepo.com/show/269007/notification-bell.svg" alt="Notifications">
                         <span id="notification-dot" class="notification-dot"></span>
                     </div>
-                    <div id="theme-switcher" class="header-icon" title="Toggle Theme">🌙</div>
+                    <div id="theme-switcher" class="header-icon" title="Toggle Theme">
+                         <img src="https://www.svgrepo.com/show/527253/moon.svg" alt="Theme">
+                    </div>
                     <a href="https://ramazone.in" target="_blank" rel="noopener noreferrer" id="store-btn" class="header-icon" title="Online Store">
-                        🛍️
+                        <img src="https://www.svgrepo.com/show/290383/online-shop-ecommerce.svg" alt="Store">
                     </a>
                     <div id="refresh-btn" class="header-icon" title="Refresh Data">
-                        🔄
+                        <img src="https://www.svgrepo.com/show/533700/refresh-cw-alt-1.svg" alt="Refresh">
                     </div>
                     <div id="logout-btn">
-                        🚪
+                        <img src="https://www.svgrepo.com/show/500927/logout.svg" alt="Logout">
                         <span>Logout</span>
                     </div>
                 </div>
@@ -745,8 +763,13 @@
         // --- Theme Management ---
         function applyTheme(theme) {
             document.body.dataset.theme = theme;
-            themeSwitcher.innerHTML = theme === 'light' ? '🌙' : '☀️';
-            themeSwitcher.classList.toggle('active-icon', theme === 'dark');
+            // The new, correct URLs for the theme icons
+            const moonIconUrl = "https://www.svgrepo.com/show/527253/moon.svg";
+            const sunIconUrl = "https://www.svgrepo.com/show/433086/light-mode.svg";
+            
+            // If the theme is 'light', show the moon icon (to switch to dark).
+            // If the theme is 'dark', show the sun icon (to switch to light).
+            themeSwitcher.querySelector('img').src = theme === 'light' ? moonIconUrl : sunIconUrl;
         }
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
@@ -1159,7 +1182,6 @@
         // --- Notification Logic ---
         function checkNewNotifications() {
             if (!currentUserData || allNotifications.length === 0) {
-                notificationBtn.classList.remove('active-icon');
                 notificationDot.classList.remove('active');
                 return;
             }
@@ -1167,10 +1189,8 @@
             const latestNotification = allNotifications.sort((a,b) => b.timestamp - a.timestamp)[0];
             
             if (latestNotification && latestNotification.timestamp > lastSeenTimestamp) {
-                notificationBtn.classList.add('active-icon');
                 notificationDot.classList.add('active');
             } else {
-                notificationBtn.classList.remove('active-icon');
                 notificationDot.classList.remove('active');
             }
         }
@@ -1194,7 +1214,6 @@
                 const timestampRef = ref(database, `users/${user.uid}/lastSeenNotificationTimestamp`);
                 await set(timestampRef, latestNotification.timestamp);
             }
-            notificationBtn.classList.remove('active-icon');
             notificationDot.classList.remove('active');
         });
 
