@@ -705,6 +705,7 @@
         const fullscreenImage = document.getElementById('fullscreen-image');
         const profilePictureInput = document.getElementById('profile-picture-input');
         const uploadStatus = document.getElementById('upload-status');
+        const walletShareBtn = document.getElementById('wallet-share-btn');
         
         // Modals & Forms
         const passwordModal = document.getElementById('password-modal');
@@ -763,12 +764,8 @@
         // --- Theme Management ---
         function applyTheme(theme) {
             document.body.dataset.theme = theme;
-            // The new, correct URLs for the theme icons
             const moonIconUrl = "https://www.svgrepo.com/show/527253/moon.svg";
             const sunIconUrl = "https://www.svgrepo.com/show/433086/light-mode.svg";
-            
-            // If the theme is 'light', show the moon icon (to switch to dark).
-            // If the theme is 'dark', show the sun icon (to switch to light).
             themeSwitcher.querySelector('img').src = theme === 'light' ? moonIconUrl : sunIconUrl;
         }
         function initTheme() {
@@ -1372,6 +1369,46 @@
             });
             fullscreenImageViewer.addEventListener('click', () => {
                 fullscreenImageViewer.classList.remove('active');
+            });
+
+            // Share Button
+            walletShareBtn.addEventListener('click', async () => {
+                if (!auth.currentUser || !currentUserData) {
+                    showToast("Data load ho raha hai, कृपया प्रतीक्षा करें।");
+                    return;
+                }
+
+                const userName = auth.currentUser.displayName || 'Prince Rama';
+                const lifetimeEarningText = `₹${(currentUserData.lifetimeEarning || 0).toFixed(2)}`;
+                const appLink = 'https://ramazone.in/cashback.html';
+
+                const shareMessage = `🎉 *Wow! Ek Zabardast Offer!* 🎉\n\nMaine, *${userName}* ne, Ramazone Cashback app se ab tak *${lifetimeEarningText}* ki bachat ki hai! 🤑\n\nAap bhi is app ko use karein aur har khareed par dher saare paise bachayein. Miss mat karna! 👇\n\n${appLink}\n\n✨ *Happy Shopping & Happy Saving!* ✨ ${appLink}`;
+
+                const shareData = {
+                    title: 'Ramazone Cashback Offer!',
+                    text: shareMessage,
+                    url: appLink 
+                };
+
+                try {
+                    if (navigator.share) {
+                        await navigator.share(shareData);
+                    } else {
+                        // Fallback for desktop or unsupported browsers
+                        const tempInput = document.createElement('textarea');
+                        tempInput.value = shareMessage;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        showToast('Share message copied to clipboard!');
+                    }
+                } catch (err) {
+                    console.error('Share failed:', err);
+                    if (err.name !== 'AbortError') {
+                        showToast('Share karne mein error aayi.');
+                    }
+                }
             });
         });
 
