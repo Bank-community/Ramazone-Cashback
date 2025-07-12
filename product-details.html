@@ -41,6 +41,29 @@
         #share-button:hover { background-color: #e5e7eb; }
         #toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background-color: #333; color: white; padding: 10px 20px; border-radius: 20px; font-size: 14px; z-index: 2000; transition: bottom 0.5s ease-in-out; }
         #toast-notification.show { bottom: 30px; }
+        
+        /* Quantity Selector Styles */
+        .quantity-selector button {
+            background-color: #e5e7eb;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            font-weight: bold;
+            width: 44px;
+            height: 44px;
+            transition: background-color 0.2s;
+        }
+        .quantity-selector button:hover {
+            background-color: #d1d5db;
+        }
+        .quantity-selector button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .quantity-selector span {
+            font-size: 1.25rem;
+            font-weight: 600;
+            min-width: 60px;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -84,7 +107,19 @@
                             <span id="product-discount" class="text-sm font-semibold text-green-600"></span>
                         </div>
                     </div>
+                    <!-- Action Buttons Section -->
                     <div class="mt-auto pt-6">
+                        <!-- NEW: Quantity Selector -->
+                        <div class="mb-5 text-center">
+                             <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                             <div class="quantity-selector inline-flex items-center justify-center bg-white rounded-lg">
+                                <button id="decrease-quantity" class="rounded-l-lg">-</button>
+                                <span id="quantity-display" class="text-center px-4 py-2 border-t border-b">1</span>
+                                <button id="increase-quantity" class="rounded-r-lg">+</button>
+                            </div>
+                        </div>
+                        
+                        <!-- WhatsApp Order Button -->
                         <a id="whatsapp-order-link" href="#" target="_blank" class="whatsapp-btn w-full flex items-center justify-center text-white font-bold py-4 px-6 rounded-xl text-lg shadow-lg">
                             <img src="https://www.svgrepo.com/show/452133/whatsapp.svg" class="w-7 h-7 mr-3" alt="WhatsApp">
                             Order on WhatsApp
@@ -132,12 +167,16 @@
 
         // --- Global Variables ---
         let modalImages = [];
-        let currentImageIndex = 0; // Renamed for clarity
+        let currentImageIndex = 0;
+        let productQuantity = 1; // NEW: For quantity control
+        let currentProductData = null; // NEW: To store product data globally
+        let currentProductId = null; // NEW: To store product ID globally
 
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const productId = params.get('id');
+            currentProductId = productId; // Store ID globally
 
             if (productId === null) {
                 document.getElementById('product-content').innerHTML = '<p class="text-center text-red-500 font-bold">URL mein product ID nahi mila.</p>';
@@ -149,9 +188,9 @@
             const productRef = database.ref(`ramazone/homepage/festiveCollection/products/${productId}`);
             productRef.get().then((snapshot) => {
                 if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    loadProduct(data, productId);
-                    loadRelatedProducts(productId);
+                    currentProductData = snapshot.val(); // Store data globally
+                    loadProduct(currentProductData, currentProductId);
+                    loadRelatedProducts(currentProductId);
                     document.getElementById('loading-indicator').style.display = 'none';
                     document.getElementById('product-content').style.display = 'block';
                 } else {
@@ -180,15 +219,18 @@
             const firstImage = (data.images && data.images.length > 0) ? data.images[0] : data.imageUrl;
             const plainDescription = `Check out this amazing product: ${data.name} on Ramazone!`;
 
+            // Update Meta tags for sharing
             document.title = `${data.name || 'Product'} - Ramazone`;
             document.querySelector('meta[property="og:title"]').setAttribute('content', data.name || 'Product on Ramazone');
             document.querySelector('meta[property="og:description"]').setAttribute('content', plainDescription);
             document.querySelector('meta[property="og:image"]').setAttribute('content', firstImage || 'https://i.ibb.co/My6h0gdd/20250706-230221.png');
             document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
 
+            // Populate product details
             document.getElementById('product-title').textContent = data.name || 'Product Name';
             document.getElementById('product-price').textContent = data.price ? `₹${data.price}` : `₹${data.offer || 'N/A'}`;
 
+            // Handle discount display
             if (data.originalPrice && data.price) {
                 const discount = Math.round(((data.originalPrice - data.price) / data.originalPrice) * 100);
                 if (discount > 0) {
@@ -198,15 +240,15 @@
                 }
             }
 
+            // Handle description
             if (data.description) {
                 document.getElementById('description-section').style.display = 'block';
                 document.getElementById('product-description').innerHTML = data.description;
             }
 
+            // Setup image gallery
             modalImages = data.images && data.images.length > 0 ? data.images : [data.imageUrl];
-            
-            // Initial image setup
-            showImage(0); // Use the new function to show the first image
+            showImage(0); // Show the first image initially
 
             const gallery = document.getElementById('thumbnail-gallery');
             gallery.innerHTML = ''; 
@@ -223,13 +265,56 @@
             
             // Setup swipe functionality for the main image
             setupImageSwipe();
-
-            const productLink = window.location.href;
-            const whatsappMessage = `🛍️ *Ramazone Store Order* 🛍️\n\nHello! I'm interested in this product:\n\n*Product:* ${data.name}\n*Price:* ₹${data.price || data.offer}\n*Product ID:* ${id}\n*Product Link:* ${productLink}\n\nPlease let me know if it's available.`;
-            document.getElementById('whatsapp-order-link').href = `https://wa.me/${sellerPhoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
             
+            // NEW: Setup quantity controls and initial WhatsApp link
+            setupQuantityControls();
+            
+            // Setup share button
             setupShareButton(data);
         }
+
+        /**
+         * NEW: Sets up the event listeners for the quantity buttons.
+         */
+        function setupQuantityControls() {
+            const decreaseBtn = document.getElementById('decrease-quantity');
+            const increaseBtn = document.getElementById('increase-quantity');
+            
+            increaseBtn.addEventListener('click', () => {
+                productQuantity++;
+                updateQuantityAndWhatsAppLink();
+            });
+
+            decreaseBtn.addEventListener('click', () => {
+                if (productQuantity > 1) {
+                    productQuantity--;
+                    updateQuantityAndWhatsAppLink();
+                }
+            });
+            
+            // Set initial state
+            updateQuantityAndWhatsAppLink();
+        }
+
+        /**
+         * NEW: Updates the quantity display and the WhatsApp order link.
+         */
+        function updateQuantityAndWhatsAppLink() {
+            const quantityDisplay = document.getElementById('quantity-display');
+            const decreaseBtn = document.getElementById('decrease-quantity');
+            
+            // Update display
+            quantityDisplay.textContent = productQuantity;
+            
+            // Disable minus button if quantity is 1
+            decreaseBtn.disabled = productQuantity <= 1;
+
+            // Update WhatsApp link
+            const productLink = window.location.href;
+            const whatsappMessage = `🛍️ *Ramazone Store Order* 🛍️\n\nHello! I'm interested in this product:\n\n*Product:* ${currentProductData.name}\n*Price:* ₹${currentProductData.price || currentProductData.offer}\n*Quantity:* ${productQuantity}\n*Product ID:* ${currentProductId}\n*Product Link:* ${productLink}\n\nPlease let me know if it's available.`;
+            document.getElementById('whatsapp-order-link').href = `https://wa.me/${sellerPhoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+        }
+
 
         /**
          * Displays a specific image and updates thumbnails.
@@ -260,7 +345,7 @@
         }
 
         /**
-         * NEW: Sets up touch and mouse swipe functionality for the main image.
+         * Sets up touch and mouse swipe functionality for the main image.
          */
         function setupImageSwipe() {
             const imageContainer = document.getElementById('main-image-container');
